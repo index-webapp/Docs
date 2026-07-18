@@ -1,0 +1,152 @@
+---
+title: "SURCHI Webhooks: Real-Time On-Chain Event Notifications"
+sidebarTitle: "Overview"
+description: "Configure SURCHI webhooks to receive real-time HTTP POST notifications for price alerts, large wallet movements, new token listings, and contract risk changes."
+---
+
+Webhooks let your application react to on-chain events the moment they are detected by SURCHI — without polling the API. When a tracked wallet makes a large trade, a new token lists on a DEX, or a contract's risk score jumps, SURCHI sends a signed HTTP POST request to a URL you control. You can use these notifications to trigger alerts, update dashboards, run automated risk checks, or execute any other server-side logic in real time.
+
+## How Webhooks Work
+
+<Steps>
+  <Step title="Create an endpoint on your server">
+    Build an HTTP route that accepts POST requests and returns a `200` status code. The endpoint must be publicly reachable by SURCHI's delivery servers.
+  </Step>
+  <Step title="Register your URL with SURCHI">
+    Add your endpoint URL through the SURCHI dashboard or by calling the webhooks API. You can register multiple endpoints and assign different event subscriptions to each one.
+  </Step>
+  <Step title="Select your event subscriptions">
+    Choose the event types you want to receive. You can subscribe to individual event types, combine multiple types on a single endpoint, or use a wildcard to receive all events.
+  </Step>
+  <Step title="SURCHI sends signed POST requests">
+    When a subscribed event fires, SURCHI sends an HTTP POST to your URL with a JSON body describing the event and an `X-Surchi-Signature` header containing an HMAC-SHA256 signature you can use to verify authenticity.
+  </Step>
+  <Step title="Acknowledge with a 200 response">
+    Return any `2xx` status code within 5 seconds to acknowledge receipt. If SURCHI does not receive a `2xx` response in time, it marks the delivery as failed and schedules a retry.
+  </Step>
+</Steps>
+
+## Setting Up a Webhook
+
+**Via the dashboard:** Navigate to **Settings → Webhooks → Add Endpoint**, enter your URL, choose your events, and save. SURCHI displays your webhook secret once on creation — copy it immediately and store it securely.
+
+**Via the API:**
+
+```bash
+curl -X POST https://api.surchi.xyz/v1/webhooks \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://yourapp.com/webhooks/surchi",
+    "events": ["token.price_alert", "wallet.large_trade"],
+    "secret": "your_webhook_secret"
+  }'
+```
+
+## Webhook Request Format
+
+Every webhook delivery shares the same top-level envelope structure. The `type` field tells you which event fired, and the `data` object contains the event-specific payload.
+
+```json
+{
+  "id": "evt_01HXXX",
+  "type": "token.price_alert",
+  "created_at": "2024-01-15T10:30:00Z",
+  "data": { ... }
+}
+```
+
+Store the `id` field to deduplicate deliveries in case the same event is delivered more than once (see the [idempotency guidance in the Events reference](/developer/webhooks/events#event-deduplication)).
+
+## Signature Verification
+
+Every request SURCHI sends includes an `X-Surchi-Signature` header containing an HMAC-SHA256 hex digest of the raw request body, signed with your webhook secret. You must verify this signature before processing any event — it is your guarantee that the request originated from SURCHI and was not tampered with in transit.
+
+<CodeGroup>
+
+```javascript Node.js (Express)
+const crypto = require('crypto');
+
+function verifyWebhookSignature(payload, signature, secret) {
+  const expected = crypto
+    .createHmac('sha256', secret)
+    .update(payload)
+    .digest('hex');
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expected)
+  );
+}
+
+// In your Express handler:
+app.post('/webhooks/surchi', express.raw({ type: 'application/json' }), (req, res) => {
+  const sig = req.headers['x-surchi-signature'];
+  if (!verifyWebhookSignature(req.body, sig, process.env.WEBHOOK_SECRET)) {
+    return res.status(401).send('Invalid signature');
+  }
+  const event = JSON.parse(req.body);
+  // Handle event...
+  res.status(200).send('OK');
+});
+```
+
+```python Python (Flask)
+import hmac
+import hashlib
+import os
+from flask import Flask, request, abort
+
+app = Flask(__name__)
+
+@app.route('/webhooks/surchi', methods=['POST'])
+def webhook():
+    signature = request.headers.get('X-Surchi-Signature')
+    expected = hmac.new(
+        os.environ['WEBHOOK_SECRET'].encode(),
+        request.data,
+        hashlib.sha256
+    ).hexdigest()
+    if not hmac.compare_digest(signature, expected):
+        abort(401)
+    event = request.json
+    # Handle event...
+    return 'OK', 200
+```
+
+</CodeGroup>
+
+<Warning>
+  Always compute the HMAC against the **raw request bytes**, not a parsed JSON object. JSON parsers may reorder keys or alter whitespace, which would cause a legitimate signature to fail verification. Use `express.raw()` in Express and `request.data` in Flask to access the unmodified body.
+</Warning>
+
+## Retry Policy
+
+If your endpoint returns a non-`2xx` status code or does not respond within 5 seconds, SURCHI marks the delivery as failed and automatically retries with exponential backoff. The retry schedule is:
+
+| Attempt | Delay after previous failure |
+|---------|------------------------------|
+| 1st retry | 1 minute |
+| 2nd retry | 5 minutes |
+| 3rd retry | 30 minutes |
+| 4th retry | 2 hours |
+| 5th retry | 8 hours |
+
+After five failed attempts SURCHI stops retrying and marks the event as undelivered. You can view and manually replay failed deliveries from the **Settings → Webhooks** dashboard.
+
+## Best Practices
+
+<Tip>
+  **Respond quickly.** Your endpoint must return a `2xx` response within 5 seconds. If your processing logic takes longer than that, acknowledge the request immediately and hand the event off to a background queue (e.g. BullMQ, Celery, or a message broker) for processing. This prevents unnecessary retries and duplicate work.
+</Tip>
+
+<Tip>
+  **Always verify the signature.** Reject any request that fails HMAC verification with a `401` status. Never skip this step, even in development environments.
+</Tip>
+
+<Tip>
+  **Use the event `id` for idempotency.** Your endpoint may receive the same event more than once due to network issues or retries. Check whether you have already processed a given `id` before acting on it.
+</Tip>
+
+<Warning>
+  **Do not perform heavy processing inside your HTTP handler.** Database writes, downstream API calls, and notification dispatches should all happen asynchronously after you have acknowledged the webhook. Blocking your handler risks timeouts and causes SURCHI to retry deliveries that were actually received successfully.
+</Warning>

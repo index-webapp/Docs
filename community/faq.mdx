@@ -1,0 +1,214 @@
+---
+title: "Frequently Asked Questions About SURCHI"
+sidebarTitle: "FAQ"
+description: "Answers to the most common questions about SURCHI's platform features, the $SURCHI token, supported networks, API access, wallet safety, and pricing."
+---
+
+Whether you're a first-time visitor trying to understand what SURCHI does, a trader looking to get more from the Wallet Intelligence tools, a developer exploring the API, or a $SURCHI token holder curious about governance — this FAQ has you covered. Browse by category or use your browser's search (Ctrl+F / Cmd+F) to find answers quickly. If your question isn't listed here, you can reach the team at [support@surchi.xyz](mailto:support@surchi.xyz) or ask in the community Discord.
+
+---
+
+## General Platform
+
+<AccordionGroup>
+  <Accordion title="1. What is SURCHI?">
+    SURCHI is a multi-chain blockchain analytics platform that provides real-time data, AI-powered contract auditing, wallet intelligence, and liquidity routing tools across major blockchain networks. It is designed for traders, developers, researchers, and DeFi participants who need fast, accurate, and actionable on-chain insights. The platform is accessible at [surchi.xyz](https://surchi.xyz) and covers networks including Ethereum, BNB Chain, Solana, Polygon, Base, Avalanche, and Arbitrum.
+  </Accordion>
+  <Accordion title="2. Is SURCHI free to use?">
+    Yes — SURCHI offers a generous free tier that includes access to the Explorer, basic token analytics, AI Contract Audit (with daily limits), and Wallet Intelligence dashboards. A premium tier is available for users who hold or stake a minimum amount of $SURCHI tokens, which unlocks higher rate limits, advanced AI features, priority audit processing, and extended historical data. Detailed pricing information is available on the [Pricing page](https://surchi.xyz/pricing).
+  </Accordion>
+  <Accordion title="3. Do I need an account to use SURCHI?">
+    No account is required for basic platform access. You can explore token data, run AI audits, and analyze wallets without signing up. However, creating an account (or connecting your wallet) unlocks additional features such as saved watchlists, custom price alerts, portfolio tracking across multiple wallets, and access to the governance portal. Account creation requires only an email address or a Solana wallet connection — no KYC or personal identification is needed.
+  </Accordion>
+  <Accordion title="4. Which blockchains does SURCHI support?">
+    SURCHI currently supports or is actively adding support for the following networks: **Solana** (fully live), **Ethereum** (in progress), **BNB Chain** (in progress), **Polygon** (Phase 3), **Base** (Phase 3), **Avalanche** (Phase 3), and **Arbitrum** (Phase 3). Additional chains including Sui, Aptos, and TON are planned for Phase 5. You can check the [Roadmap](/community/roadmap) for the latest status on each network.
+  </Accordion>
+  <Accordion title="5. How often is data updated?">
+    SURCHI ingests data directly from blockchain nodes and updates most metrics in near real time. Price data, transaction feeds, and holder counts are typically updated within 5–30 seconds of on-chain confirmation. Some derived metrics — such as 24-hour volume aggregations, PnL calculations, and audit scores — may be cached for up to 60 seconds. During periods of high network congestion, brief delays are possible. The timestamp of the last data refresh is displayed on each token and wallet page.
+  </Accordion>
+  <Accordion title="6. What is the SURCHI Explorer?">
+    The SURCHI Explorer is the platform's core discovery and research tool. It allows you to search for any token by name, ticker symbol, or contract address across all supported chains, and view a comprehensive analytics page covering price history, volume, liquidity depth, top holders, recent transactions, and AI audit results. The Explorer is designed to give you everything you need to evaluate a token in one place — without having to cross-reference multiple block explorers and data aggregators.
+  </Accordion>
+  <Accordion title="7. Can I use SURCHI on mobile?">
+    Yes — surchi.xyz is fully responsive and works well on mobile browsers. The interface automatically adapts to smaller screens, and all core features including token search, AI audits, and wallet analysis are accessible from your phone or tablet. A dedicated native mobile app for iOS and Android is planned for Phase 3 of the roadmap, which will offer push notifications, a streamlined mobile-first interface, and offline-capable portfolio summaries.
+  </Accordion>
+  <Accordion title="8. How accurate is the market data?">
+    SURCHI sources price, volume, and liquidity data from a combination of on-chain DEX pools and third-party data providers. For most tokens, especially those with significant on-chain liquidity, the data is highly accurate and closely tracks real-time market conditions. For very small or newly launched tokens with low liquidity, price data may show high variance due to the thin order book. SURCHI always displays data source timestamps and encourages users to verify data independently before making high-stakes decisions. See also the [Disclaimer](/community/disclaimer).
+  </Accordion>
+  <Accordion title="9. Does SURCHI have a mobile app?">
+    A dedicated native mobile app is on the roadmap for Phase 3, targeting both iOS and Android. The app will include the full SURCHI feature set — Explorer, AI Audit, Wallet Intelligence, portfolio tracking — plus mobile-exclusive features like push notifications for price alerts and new transaction events. In the meantime, the mobile-optimized web app at surchi.xyz provides a solid experience on any smartphone browser.
+  </Accordion>
+  <Accordion title="10. Where can I report bugs or suggest features?">
+    You can report bugs and suggest features through several channels: the in-app feedback button (available on every page), the [GitHub Issues tracker](https://github.com/surchi-xyz) for technical bugs, or the `#feedback` channel in the SURCHI Discord community. For governance-eligible feature suggestions — particularly large platform changes — you can submit a formal proposal through the [governance portal](https://surchi.xyz/governance). The team reviews all submissions and prioritizes based on community impact and feasibility.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## AI Contract Audit
+
+<AccordionGroup>
+  <Accordion title="11. What is an AI Contract Audit?">
+    The AI Contract Audit is SURCHI's automated security analysis tool that evaluates a token's smart contract code and on-chain behavior to identify potential risks. It scans for common vulnerabilities and dangerous patterns — such as honeypot mechanics, hidden mint functions, owner-controlled liquidity withdrawal, and blacklisting capabilities — and produces a structured risk report with an overall risk score from 0 (lowest risk) to 100 (highest risk). The audit is designed to help you quickly identify red flags before investing in or interacting with an unfamiliar token.
+  </Accordion>
+  <Accordion title="12. How is the risk score calculated?">
+    The risk score is a weighted composite of multiple individual check results. Each check evaluates a specific contract property or on-chain behavior pattern — for example, whether the mint authority is revoked, whether trading can be paused by the owner, or whether the liquidity pool is locked. High-severity findings (such as a verified honeypot or an active mint authority with a large uncirculated supply) contribute more heavily to the overall score than low-severity informational flags. The scoring model is regularly updated as new attack vectors and rug pull patterns are identified in the wild.
+  </Accordion>
+  <Accordion title="13. Can I audit any contract on any chain?">
+    Currently, the AI Audit engine is live for Solana SPL tokens. Support for Ethereum ERC-20 contracts and BNB Chain BEP-20 contracts is being added as part of Phase 2, with further chain coverage following in Phase 3. If you attempt to audit a contract on an unsupported chain, SURCHI will display the current coverage status and an estimated timeline for when that chain will be supported.
+  </Accordion>
+  <Accordion title="14. What is a honeypot?">
+    A honeypot is a fraudulent token designed to allow buyers but prevent sellers — trapping investors' funds in a worthless asset. The smart contract contains hidden logic that blocks the `sell` or `transfer` function for all wallets except the deployer's. Honeypots are one of the most common forms of crypto fraud. SURCHI's AI Audit specifically checks for honeypot patterns by simulating buy and sell transactions against the contract and flagging any discrepancy in execution success rates.
+  </Accordion>
+  <Accordion title="15. What does 'mint authority' mean?">
+    Mint authority refers to the ability to create new tokens beyond the originally deployed supply. On Solana, the mint authority is a designated wallet address that has permission to mint additional tokens. If a token's mint authority has **not** been revoked, the project team (or anyone who gains control of that wallet) can inflate the supply at will, dramatically devaluing existing holders' positions. SURCHI's audit prominently flags whether mint authority is active or revoked, as this is one of the most critical safety indicators for any token.
+  </Accordion>
+  <Accordion title="16. What does 'freeze authority' mean on Solana?">
+    Freeze authority is a Solana-specific feature that allows the designated authority wallet to freeze any token account, preventing the account holder from transferring or selling their tokens. While freeze authority has legitimate uses (such as regulatory compliance for stablecoins), its presence in a speculative token is a significant red flag, as it can be used to selectively block specific holders from selling — effectively a targeted honeypot. SURCHI's audit checks whether freeze authority is active or revoked and explains the implications in plain language.
+  </Accordion>
+  <Accordion title="17. Is a low risk score a guarantee of safety?">
+    No. A low risk score means that SURCHI's automated checks did not detect known malicious patterns at the time of the audit, but it is not a guarantee that the contract is safe or that the token is a good investment. Sophisticated bad actors may use novel attack vectors not yet in SURCHI's detection model, or the project may carry non-technical risks (such as an anonymous team abandoning the project or poor business fundamentals). Always treat an AI audit as one data point among many, and never invest more than you can afford to lose. See the [Disclaimer](/community/disclaimer) for the full risk warning.
+  </Accordion>
+  <Accordion title="18. How do I export an audit report as PDF?">
+    On any token's audit results page, click the **Export Report** button in the top-right corner and select **Download as PDF**. The PDF includes the full audit summary, individual check results, risk score breakdown, and a timestamped certificate of the audit run. PDF export is available on the free tier with SURCHI branding; premium users can generate white-label reports without watermarks, suitable for sharing with teams or investors.
+  </Accordion>
+  <Accordion title="19. How often are audit models updated?">
+    SURCHI's AI audit models are updated continuously as new fraud patterns, rug pull mechanics, and smart contract vulnerabilities are identified. Major model updates are deployed whenever a novel attack vector is confirmed in the wild — typically within 24–72 hours of the technique being documented. Minor parameter adjustments and scoring refinements are deployed weekly. Update notes are published in the changelog at surchi.xyz/changelog.
+  </Accordion>
+  <Accordion title="20. Can I audit my own contract before launching?">
+    Yes — SURCHI supports pre-launch audits for contracts that have been deployed to a supported network but have not yet been listed on a DEX or publicly announced. Simply enter your contract address into the AI Audit tool. This is a valuable step for legitimate developers who want to verify that their contract does not inadvertently trigger any red flags before going public. Pre-launch audits are treated identically to regular audits and do not expose your contract address to any additional parties.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Wallet Intelligence
+
+<AccordionGroup>
+  <Accordion title="21. What is PnL?">
+    PnL stands for **Profit and Loss**. In the context of SURCHI's Wallet Intelligence tool, PnL represents the net financial performance of a wallet's trading activity — the difference between the total value received from selling tokens and the total cost paid to acquire them. PnL is broken down into realized PnL (gains and losses from completed trades) and unrealized PnL (current gains or losses on positions still held). It is expressed in both USD and as a percentage return.
+  </Accordion>
+  <Accordion title="22. How is my PnL calculated?">
+    SURCHI calculates PnL by reconstructing every token purchase and sale transaction associated with the wallet from on-chain data. For each trade, it computes the cost basis (the price paid, including transaction fees) and the sale proceeds (the value received). Realized PnL is the sum of all completed trade profits and losses. Unrealized PnL is calculated using the current market price for tokens still held. All values are converted to USD using the historical price at the time of each transaction for realized PnL, and the current price for unrealized PnL.
+  </Accordion>
+  <Accordion title="23. Does SURCHI store my private key?">
+    Absolutely not. SURCHI never requests, stores, or has any access to your private key or seed phrase. All wallet analysis on SURCHI is performed using publicly available on-chain data — your wallet address is a public identifier on the blockchain, and all transaction history is permanently visible to anyone. You do not need to connect your wallet to analyze any address; simply enter the wallet address in the search bar. If you choose to connect your wallet for features like portfolio alerts, SURCHI uses a read-only wallet connection that only reads your public address.
+  </Accordion>
+  <Accordion title="24. What are 'smart money' wallets?">
+    "Smart money" wallets are on-chain addresses that SURCHI's algorithms have identified as consistently high-performing traders — wallets that repeatedly enter positions early, achieve high win rates, and generate above-average returns over a sustained period. SURCHI uses a combination of win rate, average PnL per trade, trade frequency, and early entry timing (buying before significant price moves) to score and rank wallets. Tracking smart money wallets can provide valuable signal about which tokens are attracting experienced, profitable traders.
+  </Accordion>
+  <Accordion title="25. What are wallet tags?">
+    Wallet tags are human-readable labels that SURCHI applies to addresses based on their on-chain behavior and known identity information. Examples include tags like **Whale** (large holdings), **Early Buyer** (consistently buys tokens before price pumps), **Dev Wallet** (address associated with token deployments), **Exchange** (a known CEX hot wallet), or **Sniper** (uses bots to buy tokens within seconds of liquidity being added). Tags help you quickly understand the context of any wallet you're analyzing without needing to read raw transaction data.
+  </Accordion>
+  <Accordion title="26. Can I track multiple wallets at once?">
+    Yes. You can add multiple wallet addresses to your SURCHI watchlist and monitor them simultaneously from a unified dashboard. The multi-wallet view shows aggregate holdings, recent transactions across all tracked addresses, and a combined PnL summary. Premium users can track an unlimited number of wallets; free-tier users can track up to 5 wallets simultaneously. Wallet tracking does not require the wallet owner's permission — all data is sourced from the public blockchain.
+  </Accordion>
+  <Accordion title="27. How far back does trading history go?">
+    SURCHI provides trading history back to the genesis of each supported blockchain — there is no artificial cutoff on historical data. For Solana, this means full transaction history since the mainnet launch. However, very old or extremely large wallets with thousands of transactions may experience slightly longer load times as the data is aggregated. For premium users, historical data exports via the API are available in paginated form with no time-based restrictions.
+  </Accordion>
+  <Accordion title="28. What is the difference between realized and unrealized PnL?">
+    **Realized PnL** is the profit or loss from trades you have already completed — positions where you both bought and sold the token. The gain or loss is "locked in" once the sell transaction is confirmed on-chain. **Unrealized PnL** (sometimes called "paper gains" or "paper losses") is the current gain or loss on tokens you still hold. It represents how much you would profit or lose if you sold at the current market price right now. Unrealized PnL fluctuates constantly with the token's price and only becomes realized when you actually sell.
+  </Accordion>
+  <Accordion title="29. Can I set alerts on a wallet I don't own?">
+    Yes. SURCHI allows you to set transaction alerts on any wallet address, regardless of whether you own it. You can be notified when a tracked wallet makes a large purchase or sale, receives a significant transfer, interacts with a specific contract, or crosses a portfolio value threshold. This is particularly useful for monitoring smart money wallets, whale addresses, or developer wallets associated with tokens you hold. Alerts are delivered via browser notifications and email.
+  </Accordion>
+  <Accordion title="30. How does SURCHI detect whale wallets?">
+    SURCHI identifies whale wallets using multiple signals: absolute token holdings (wallets holding more than 1% of a token's total supply are flagged), USD portfolio value thresholds, historical transaction volume, and relative influence on price action. A wallet is tagged as a **Whale** when it consistently appears in the top holder lists of multiple tokens, makes trades of significant size relative to daily volume, or has demonstrated the ability to move token prices through its transactions. Whale detection thresholds vary by token and are calibrated relative to each token's total supply and liquidity.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## $SURCHI Token
+
+<AccordionGroup>
+  <Accordion title="31. What is $SURCHI?">
+    $SURCHI is the native utility and governance token of the SURCHI platform, deployed as a Solana SPL token. It serves three primary functions: unlocking premium platform features (such as higher API rate limits and advanced analytics), granting governance voting rights on platform proposals, and providing staking rewards to long-term holders. $SURCHI is not a security or investment instrument — it is a functional token designed to align platform incentives between the team and the community.
+  </Accordion>
+  <Accordion title="32. Where can I buy $SURCHI?">
+    $SURCHI is available on Solana-based decentralized exchanges (DEXs). You can swap SOL or USDC for $SURCHI using platforms such as Raydium or Jupiter. Simply connect a compatible Solana wallet (Phantom, Solflare, Backpack), search for the official $SURCHI contract address, and execute the swap. Always verify the contract address directly from the official SURCHI website or documentation to avoid purchasing counterfeit tokens. The official contract address is listed at [surchi.xyz](https://surchi.xyz).
+  </Accordion>
+  <Accordion title="33. What is the total supply of $SURCHI?">
+    The total supply of $SURCHI is **19,897,905 tokens** — a fixed amount that was set at deployment and cannot be increased. The tokenomics are as follows: **60% (11,938,743 tokens)** was allocated to the presale, **30% (5,969,372 tokens)** was allocated to liquidity pool seeding, and **10% (1,989,791 tokens)** was reserved for the ecosystem fund, which is used for grants, partnerships, development incentives, and governance-approved initiatives.
+  </Accordion>
+  <Accordion title="34. Is the supply fixed?">
+    Yes, the $SURCHI supply is permanently fixed at 19,897,905 tokens. The mint authority was revoked after the initial token deployment, which means no new tokens can ever be created. This is verifiable on-chain by anyone — SURCHI's own AI Audit tool confirms that the mint authority for $SURCHI is revoked. The fixed supply provides a reliable foundation for token economics and ensures that holders are not subject to dilution through future minting.
+  </Accordion>
+  <Accordion title="35. What does holding $SURCHI unlock?">
+    Holding $SURCHI unlocks premium platform features based on your token balance. Benefits include: access to the premium analytics tier, higher API rate limits, unlimited wallet tracking (vs. 5 on the free tier), advanced AI audit features (including PDF export without watermarks), early access to new features, governance voting rights, and staking rewards. The minimum holding thresholds for each benefit tier are published on the [Pricing page](https://surchi.xyz/pricing) and may be adjusted through governance votes.
+  </Accordion>
+  <Accordion title="36. Is $SURCHI available on centralized exchanges?">
+    $SURCHI is currently only available on decentralized exchanges (DEXs) on Solana. Centralized exchange (CEX) listings are a potential future milestone but have not been announced. The team's current focus is on building platform utility and growing organic demand for the token through genuine usage, rather than pursuing exchange listings as a primary growth lever. Any verified CEX listing announcements will be made exclusively through official SURCHI channels — be cautious of any unofficial claims.
+  </Accordion>
+  <Accordion title="37. What wallet do I need to hold $SURCHI?">
+    You need a **Solana-compatible wallet** to hold $SURCHI, as it is a Solana SPL token. The most popular and recommended options are **Phantom** (available as a browser extension and mobile app), **Solflare** (browser extension and mobile), and **Backpack**. All three wallets support SPL tokens natively. Hardware wallet users can use $SURCHI with a **Ledger** device connected through Phantom or Solflare for maximum security.
+  </Accordion>
+  <Accordion title="38. What is the contract address of $SURCHI?">
+    The official $SURCHI contract (mint) address is published on the [surchi.xyz](https://surchi.xyz) homepage and in the platform footer. Always verify the contract address from this official source before purchasing — never trust contract addresses shared in Telegram groups, Discord DMs, or unofficial social media accounts, as scammers frequently deploy copycat tokens with similar names. The address is also verifiable via Solana explorers such as Solscan and SolanaFM.
+  </Accordion>
+  <Accordion title="39. Are there team tokens or a vesting schedule?">
+    The $SURCHI tokenomics are fully transparent: 60% to presale participants, 30% to the liquidity pool, and 10% to the ecosystem fund. There is no separate team allocation or founder token reserve. The core team's compensation and long-term incentives are tied to the ecosystem fund, which is subject to governance oversight for any disbursements above the minimum threshold. This structure was chosen to avoid the misaligned incentives that arise when founding teams hold large vesting positions.
+  </Accordion>
+  <Accordion title="40. Will there be token burns?">
+    Token burn mechanisms are not part of the current tokenomics, but burning a portion of the ecosystem fund or implementing fee-based burns is a governance-eligible proposal. If the community votes to introduce a burn mechanism — for example, burning a percentage of premium subscription fees — the team will implement it according to the governance timeline. Any changes to the token supply mechanics would require a formal governance vote and would be clearly communicated well in advance.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## API & Developer
+
+<AccordionGroup>
+  <Accordion title="41. How do I get an API key?">
+    You can generate an API key from the [SURCHI Developer Dashboard](https://surchi.xyz/developers) after creating an account. Navigate to **Settings → API Keys → Generate New Key**. Free-tier API keys are available to all registered users with no payment required. For higher-rate premium API access, you'll need to hold the required $SURCHI balance or subscribe to an enterprise plan. Your API key should be kept secret — do not expose it in client-side code or public repositories.
+  </Accordion>
+  <Accordion title="42. Is there a free API tier?">
+    Yes. The free API tier provides access to token data, basic price and volume metrics, and AI audit scores with a rate limit of 100 requests per minute. The free tier is suitable for personal projects, prototyping, and low-volume applications. For production applications requiring higher throughput, extended historical data, or webhook support, premium API tiers are available to $SURCHI holders and enterprise customers. Full tier comparison is available on the [API documentation](/developer/api/overview) page.
+  </Accordion>
+  <Accordion title="43. What data is available via the API?">
+    The SURCHI API provides programmatic access to: token search and metadata, real-time and historical price/volume data, AI audit scores and detailed check results, wallet analytics and PnL data, holder lists and holder change events, liquidity pool data and DEX routing quotes, and transaction history for wallets and tokens. The full API reference with endpoint documentation, request/response schemas, and code examples is available at [surchi.xyz/docs/api-reference](/developer/api/overview).
+  </Accordion>
+  <Accordion title="44. What rate limits apply to the API?">
+    Rate limits vary by tier. The **free tier** allows 100 requests per minute. The **standard tier** (basic $SURCHI holding) allows 1,000 requests per minute. The **premium tier** (higher $SURCHI holding or paid plan) allows 10,000 requests per minute. **Enterprise plans** offer custom rate limits with dedicated infrastructure. Rate limit headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`) are included in every API response so your application can manage its request budget proactively.
+  </Accordion>
+  <Accordion title="45. Does SURCHI have a JavaScript SDK?">
+    An official JavaScript/TypeScript SDK is planned for release in Phase 3 of the roadmap. It will be published as an npm package and will provide typed wrappers for all API endpoints, built-in retry logic, rate limit handling, and WebSocket support for real-time data streams. In the meantime, the REST API works seamlessly with any HTTP client library in JavaScript — the [API documentation](/developer/api/overview) includes JavaScript code examples using `fetch` and `axios`.
+  </Accordion>
+  <Accordion title="46. Does SURCHI support webhooks?">
+    Webhook support is planned for Phase 3 of the roadmap. Webhooks will allow your application to receive real-time push notifications when specific on-chain events occur — such as a price crossing a threshold, a wallet making a trade, or a new audit flag being triggered — without needing to poll the API. Until webhooks are available, you can achieve similar functionality by polling the relevant API endpoints at your desired frequency within your rate limit budget.
+  </Accordion>
+  <Accordion title="47. What webhook events are available?">
+    When webhooks launch in Phase 3, the planned event types include: `token.price_alert` (price crosses a user-defined threshold), `wallet.transaction` (a tracked wallet executes a trade or transfer), `wallet.large_transfer` (a transfer exceeding a value threshold), `audit.flag_updated` (a token's audit risk score changes), `token.new_holder` (holder count changes), and `liquidity.change` (significant liquidity addition or removal). Additional event types can be proposed through the governance process.
+  </Accordion>
+  <Accordion title="48. Can I query historical data via the API?">
+    Yes. The SURCHI API supports historical data queries for token prices, volumes, and wallet transactions going back to the genesis of each supported blockchain. Historical price data is returned in OHLCV (Open/High/Low/Close/Volume) format with configurable time intervals (1m, 5m, 15m, 1h, 4h, 1d). Historical wallet transaction data is paginated and sortable by timestamp. Free-tier access to historical data may be limited to 90 days; premium and enterprise tiers provide full historical depth.
+  </Accordion>
+  <Accordion title="49. Is there an OpenAPI/Swagger spec available?">
+    Yes. An OpenAPI 3.0 specification file is available for download at [surchi.xyz/api/openapi.json](https://surchi.xyz/api/openapi.json). You can import this spec into tools like Postman, Insomnia, or Swagger UI to explore the full API interactively and generate client code in your preferred language. The spec is kept up to date with every API release and is also used to generate the interactive API playground embedded in this documentation.
+  </Accordion>
+  <Accordion title="50. How do I handle API rate limit errors?">
+    When you exceed your rate limit, the API returns an HTTP `429 Too Many Requests` response. The response headers include `X-RateLimit-Reset`, which contains the Unix timestamp when your rate limit window resets. Implement **exponential backoff with jitter** in your application — wait a short period after a 429, then retry, doubling the wait time on each subsequent failure. The official SDKs (once released) will handle this automatically. For persistent rate limit issues, consider upgrading your API tier or optimizing your request patterns to use batch endpoints where available.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## DeFi & Advanced Topics
+
+<AccordionGroup>
+  <Accordion title="51. What is Pump.fun and why does SURCHI track it?">
+    Pump.fun is a Solana-based token launchpad that enables anyone to create and launch a new SPL token in seconds using a bonding curve pricing mechanism. It has become one of the primary venues for new token launches on Solana, generating enormous daily volume and hundreds of new token deployments per hour. SURCHI tracks Pump.fun in real time because it is a critical part of the Solana ecosystem — traders who want to identify early opportunities or avoid scams need immediate visibility into newly launched tokens, their bonding curve progress, early holder activity, and AI risk scores.
+  </Accordion>
+  <Accordion title="52. How does the liquidity routing work?">
+    SURCHI's Smart Liquidity Routing (available in Phase 3) analyzes liquidity pools across multiple DEXs on each supported chain to find the optimal execution path for a given swap. Rather than routing your entire trade through a single pool — which can cause high slippage on larger trades — the router splits the trade across multiple pools and routes in a way that minimizes price impact and maximizes the tokens you receive. The routing algorithm factors in pool depth, current swap fees, gas costs, and multi-hop path efficiency. The best route is presented to you before you confirm the swap.
+  </Accordion>
+  <Accordion title="53. What is the difference between Market Cap and FDV?">
+    **Market Cap** (Market Capitalization) is the current price of a token multiplied by the number of tokens currently in **circulating supply** — the tokens that are actively tradable and not locked in vesting contracts, team wallets, or unminted allocations. **FDV** (Fully Diluted Valuation) is the current price multiplied by the **total maximum supply** — including all tokens that will ever exist, even those not yet in circulation. FDV represents what the market cap would be if every token were circulating today. A large gap between Market Cap and FDV can indicate significant future sell pressure as locked tokens are unlocked and enter the market.
+  </Accordion>
+  <Accordion title="54. What is liquidity lock and why does it matter?">
+    A liquidity lock is a smart contract mechanism that prevents the liquidity pool tokens (LP tokens) from being withdrawn from a DEX pool for a specified period of time. When a token team locks liquidity, they are demonstrating that they cannot immediately "rug pull" by removing all the trading liquidity and collapsing the token price. SURCHI's AI Audit checks whether a token's liquidity is locked, for how long, and what percentage of the total liquidity is subject to the lock. Unlocked or partially locked liquidity is a significant risk flag. Note that a liquidity lock does not prevent all forms of fraud — teams can still dump their personal token holdings even with locked LP.
+  </Accordion>
+  <Accordion title="55. How can I contribute to SURCHI governance?">
+    There are multiple ways to participate in governance. First, acquire and hold $SURCHI tokens — even a small amount gives you voting rights. Second, visit the [governance portal](https://surchi.xyz/governance) to review and vote on active proposals during their 7-day voting windows. Third, engage in the community discussion during the Draft phase of proposals — your feedback can shape how a proposal is written before it goes to a formal vote. Fourth, if you have an idea for a platform change, you can submit your own proposal through the governance portal. See the [Governance page](/community/governance) for the full participation guide.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,126 @@
+---
+title: "Smart Liquidity Routing: Best-Price Swaps Across DEXes"
+sidebarTitle: "Liquidity Routing"
+description: "SURCHI's Smart Liquidity Routing finds the best swap route across Raydium, Orca, Jupiter, and Pump.fun to minimize slippage and maximize your trade execution."
+---
+
+SURCHI's Smart Liquidity Routing aggregates liquidity from every major Solana DEX — Raydium, Orca, Jupiter, and Pump.fun — to find the optimal execution path for any swap. Instead of manually checking each DEX for the best price, the routing engine queries all available pools simultaneously, factors in fees and price impact, and returns the route that puts the most tokens in your wallet. Whether you're trading a liquid blue-chip or a newly launched meme token, SURCHI's router ensures you never leave value on the table.
+
+## Supported DEXes
+
+<CardGroup cols={2}>
+  <Card title="Raydium" icon="water" href="https://raydium.io">
+    Raydium is one of Solana's largest AMMs, offering both traditional constant-product pools and Concentrated Liquidity Market Maker (CLMM) pools for capital-efficient trading. SURCHI indexes all Raydium pools in real time, including permissionless pool creation events.
+  </Card>
+  <Card title="Orca" icon="fish" href="https://orca.so">
+    Orca's Whirlpools implement concentrated liquidity on Solana, giving liquidity providers the ability to target specific price ranges for maximum capital efficiency. SURCHI routes through Whirlpool ticks to find the most efficient execution path.
+  </Card>
+  <Card title="Jupiter" icon="planet-ringed" href="https://jup.ag">
+    Jupiter is Solana's leading liquidity aggregator and already performs multi-hop routing across dozens of DEXes. SURCHI integrates Jupiter as a routing leg, meaning you benefit from Jupiter's deep liquidity network as one option within SURCHI's broader comparison.
+  </Card>
+  <Card title="Pump.fun" icon="rocket" href="https://pump.fun">
+    Pump.fun uses a bonding curve mechanism for token launches. SURCHI monitors every active bonding curve and routes trades through Pump.fun pools during the launch phase. When a token graduates to Raydium, SURCHI automatically switches to the new Raydium pool.
+  </Card>
+</CardGroup>
+
+## How the Routing Algorithm Works
+
+<Steps>
+  <Step title="Query all available pools">
+    When you request a swap route, SURCHI simultaneously queries every pool holding the input and output token pair across all integrated DEXes. This includes direct pairs and potential intermediate tokens for multi-hop routes.
+  </Step>
+  <Step title="Calculate effective price per route">
+    For each candidate route, the engine calculates the net output after accounting for pool fees, price impact (based on pool depth and trade size), and any slippage within the price range. Multi-hop routes include the cumulative cost of each leg.
+  </Step>
+  <Step title="Identify split routing opportunities">
+    If splitting the trade across multiple DEXes yields a better total output than routing through a single pool, the engine proposes a split route. For example: 60% through Raydium and 40% through Orca might net more output than routing 100% through either one alone.
+  </Step>
+  <Step title="Return the optimal route">
+    SURCHI returns the single best route (or best split combination) with the estimated output amount, price impact percentage, total fees, and a breakdown of each leg. All alternative routes are returned alongside so you can compare.
+  </Step>
+  <Step title="Execute the swap (via API or app)">
+    When using the SURCHI app or Liquidity API, you can execute the swap directly against the recommended route. The route is refreshed every 500ms so your execution price reflects the latest on-chain state.
+  </Step>
+</Steps>
+
+## Liquidity Aggregation
+
+SURCHI aggregates pool depth across all integrated DEXes into a unified view, so you see the complete liquidity picture for any token pair — not just what's available on one exchange. This is especially valuable for tokens with fragmented liquidity spread across multiple AMMs, where the best route is rarely the most obvious one.
+
+<Note>
+  Multi-hop routes can traverse up to 3 intermediate tokens. For example, a BONK → ETH swap might route through BONK → USDC → SOL → ETH if that path yields a better net output than a direct BONK → ETH pair (if one even exists).
+</Note>
+
+## Pool Detection
+
+SURCHI monitors the blockchain in real time for new pool creation events. When a new liquidity pool is created on any supported DEX, SURCHI indexes it within seconds and immediately makes it eligible for routing. This means freshly launched tokens are available in routing calculations almost as soon as their pool is created — you won't miss early liquidity.
+
+## Routing Parameters
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| Slippage Tolerance | Maximum acceptable price slippage as a percentage | 0.5% |
+| Max Hops | Maximum number of intermediate token legs in a route | 3 |
+| Split Routes | Maximum number of parallel DEX legs in a split route | 4 |
+| Price Refresh Rate | How often quotes are refreshed | Every 500ms |
+| Price Impact Warning | Warning displayed above this impact threshold | 1% |
+| Price Impact Block | Trade blocked above this impact threshold | 5% |
+
+## Pump.fun Integration
+
+Pump.fun uses a bonding curve model where token prices increase automatically as more SOL is deposited. SURCHI tracks every active Pump.fun token and the state of its bonding curve in real time.
+
+**Bonding curve phase:** When a Pump.fun token is in the bonding curve phase (before graduation), all buy and sell transactions go through the bonding curve contract. SURCHI routes these trades through the Pump.fun bonding curve and displays the current curve price alongside the estimated output for your trade size.
+
+**Graduation detection:** When a token's bonding curve reaches approximately 85 SOL in market cap, it graduates and migrates to a Raydium pool. SURCHI detects the graduation transaction within seconds and immediately transitions routing to the new Raydium pool. You will never be routed through a graduated bonding curve that no longer accepts trades.
+
+**Post-graduation routing:** After graduation, the token is treated as a standard Raydium pool token. SURCHI continues to monitor for additional liquidity additions and will include the token in multi-DEX routing comparisons as liquidity grows.
+
+## Example Route Response
+
+```json
+{
+  "input_token": "SOL",
+  "output_token": "SURCHI",
+  "input_amount": 1.0,
+  "network": "solana",
+  "routes": [
+    {
+      "dex": "Jupiter",
+      "path": ["SOL", "USDC", "SURCHI"],
+      "output_amount": 42850.0,
+      "price_impact_pct": 0.12,
+      "fee_pct": 0.25,
+      "num_hops": 2
+    },
+    {
+      "dex": "Raydium",
+      "path": ["SOL", "SURCHI"],
+      "output_amount": 42610.0,
+      "price_impact_pct": 0.18,
+      "fee_pct": 0.25,
+      "num_hops": 1
+    },
+    {
+      "dex": "Orca",
+      "path": ["SOL", "SURCHI"],
+      "output_amount": 42490.0,
+      "price_impact_pct": 0.21,
+      "fee_pct": 0.30,
+      "num_hops": 1
+    }
+  ],
+  "best_route": "Jupiter",
+  "estimated_output": 42850.0,
+  "quote_timestamp": "2024-01-15T10:30:00Z",
+  "quote_expires_at": "2024-01-15T10:30:00.500Z"
+}
+```
+
+<Warning>
+  Quotes are valid for 500ms. On-chain conditions can change between quote retrieval and transaction submission. Always set an appropriate slippage tolerance and confirm the final execution price before approving any transaction. High slippage trades (above 1% price impact) are displayed with a warning — review these carefully.
+</Warning>
+
+<Tip>
+  Use the [Liquidity API](/developer/api/liquidity) to programmatically fetch routes and build swap functionality directly into your own application. The API returns the same real-time routing data powering the SURCHI front end.
+</Tip>

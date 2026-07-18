@@ -1,0 +1,142 @@
+---
+title: "SURCHI Python SDK Reference and Usage Examples"
+sidebarTitle: "Python SDK"
+description: "Complete guide to using the surchi-sdk Python package: installation, async and sync clients, token queries, wallet PnL, contract audits, and error handling."
+---
+
+The `surchi-sdk` package is the official Python client for the SURCHI API. It ships with both a synchronous client for scripting and standard web frameworks and an asynchronous client built on `httpx` for high-throughput applications and async frameworks such as FastAPI or asyncio-based pipelines.
+
+## Installation
+
+```bash
+pip install surchi-sdk
+```
+
+## Requirements
+
+- **Python 3.8 or later** — the SDK uses `dataclasses`, `typing`, and `asyncio` features available from 3.8 onwards.
+- **`httpx`** — installed automatically as a dependency. You do not need to install it separately.
+
+## Initialization
+
+You can construct either the synchronous `Surchi` client or the asynchronous `AsyncSurchi` client. Both accept the same constructor arguments.
+
+```python
+import os
+from surchi import Surchi
+
+# Synchronous client
+client = Surchi(api_key=os.environ['SURCHI_API_KEY'])
+
+# Async client
+from surchi import AsyncSurchi
+async_client = AsyncSurchi(api_key=os.environ['SURCHI_API_KEY'])
+```
+
+## Tokens Module
+
+Use `client.tokens` to look up token metadata, prices, and holder data for any address across supported networks.
+
+```python
+# Get token data
+token = client.tokens.get(
+    address='So11111111111111111111111111111111111111112',
+    network='solana'
+)
+print(f"Price: ${token.price_usd}")
+print(f"Market Cap: ${token.market_cap:,.0f}")
+print(f"Risk Score: {token.risk_score}/100")
+
+# Search tokens
+results = client.tokens.search('PEPE', network='ethereum', limit=10)
+for t in results:
+    print(t.name, t.address)
+
+# Get holders
+holders = client.tokens.holders(
+    '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+    network='ethereum',
+    limit=50
+)
+```
+
+## Wallets Module
+
+`client.wallets` surfaces on-chain behavior, profit/loss calculations, and current portfolio composition for any wallet address.
+
+```python
+# Wallet analysis
+wallet = client.wallets.analyze(
+    address='7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
+    network='solana'
+)
+
+# Get PnL
+pnl = client.wallets.pnl(
+    address='7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
+    network='solana',
+    timeframe='30d'
+)
+print(f"Realized PnL: ${pnl.realized_usd:,.2f}")
+print(f"ROI: {pnl.roi_pct:.1f}%")
+```
+
+## Contracts Module
+
+`client.contracts` runs the SURCHI AI audit engine against a contract address and returns a structured report covering honeypot detection, ownership risks, and a plain-language summary.
+
+```python
+# AI Contract Audit
+audit = client.contracts.audit(
+    address='TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+    network='solana'
+)
+
+print(f"Risk Score: {audit.risk_score}/100")
+print(f"Risk Level: {audit.risk_level}")
+print(f"Honeypot: {audit.checks.honeypot}")
+print(f"Summary: {audit.ai_summary}")
+```
+
+## Async Usage
+
+Use `AsyncSurchi` when you need to run multiple requests concurrently or when you're inside an async framework. The async client supports the context manager protocol so connections are properly closed when the block exits.
+
+```python
+import asyncio
+import os
+from surchi import AsyncSurchi
+
+async def main():
+    async with AsyncSurchi(api_key=os.environ['SURCHI_API_KEY']) as client:
+        token, audit = await asyncio.gather(
+            client.tokens.get(
+                'So11111111111111111111111111111111111111112',
+                network='solana'
+            ),
+            client.contracts.audit(
+                'So11111111111111111111111111111111111111112',
+                network='solana'
+            )
+        )
+        print(f"{token.name}: risk score {audit.risk_score}")
+
+asyncio.run(main())
+```
+
+## Error Handling
+
+Import the exception classes from `surchi.exceptions` to handle rate limits, missing resources, and general API errors independently.
+
+```python
+from surchi.exceptions import SurchiError, RateLimitError, NotFoundError
+
+try:
+    token = client.tokens.get(address, network=network)
+except RateLimitError as e:
+    print(f"Rate limited. Retry after {e.retry_after}s")
+except NotFoundError:
+    print("Token not found on this network")
+except SurchiError as e:
+    print(f"API error: {e.message} ({e.code})")
+```

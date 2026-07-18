@@ -1,0 +1,113 @@
+---
+title: "SURCHI Platform: Complete Multi-Chain Analytics Ecosystem"
+sidebarTitle: "Overview"
+description: "Explore the full SURCHI platform: real-time blockchain indexing, professional charts, AI analytics, wallet tools, alerts, and cross-chain support across 7+ networks."
+---
+
+SURCHI is an integrated multi-chain blockchain analytics ecosystem designed to give traders, researchers, and developers a unified lens into on-chain activity across seven major networks. Rather than stitching together a dozen fragmented tools, SURCHI combines a real-time token explorer, AI-powered contract auditing, wallet intelligence, smart liquidity routing, and community features into a single cohesive platform — all accessible at [surchi.xyz](https://surchi.xyz).
+
+## Platform Modules
+
+Every capability within SURCHI is organized into a dedicated module. Together, these modules form a complete analytics workflow that takes you from initial token discovery through deep-dive risk assessment and ongoing portfolio monitoring.
+
+<CardGroup cols={3}>
+  <Card title="Explorer" icon="magnifying-glass" href="/platform/explorer">
+    Search tokens, contracts, wallets, and liquidity pairs across all supported chains in real time.
+  </Card>
+  <Card title="AI Contract Audit" icon="robot" href="/platform/ai-audit">
+    Automatically scan smart contract bytecode and source code for vulnerabilities, rugpull vectors, and tax anomalies using SURCHI's AI engine.
+  </Card>
+  <Card title="Wallet Intelligence" icon="wallet" href="/platform/wallet-intelligence">
+    Profile any wallet address: PnL history, token holdings, transaction patterns, and whale classification.
+  </Card>
+  <Card title="Liquidity Routing" icon="route" href="/platform/liquidity-routing">
+    Discover the optimal swap path across DEX pools and chains with SURCHI's smart liquidity routing engine.
+  </Card>
+  <Card title="Alerts & Watchlists" icon="bell" href="/platform/overview">
+    Set price alerts and on-chain event triggers, and organize tracked assets into custom watchlists.
+  </Card>
+  <Card title="Trending Tokens" icon="chart-line" href="/developer/api/tokens">
+    Surface tokens gaining traction across chains based on volume spikes, new holder growth, and social signals.
+  </Card>
+</CardGroup>
+
+## Real-Time Blockchain Indexing
+
+SURCHI indexes multiple blockchains simultaneously through a distributed ingestion layer that subscribes to each network's latest block data as it is produced. New blocks are parsed, decoded, and stored within milliseconds of finalization, meaning the data you see in the SURCHI Explorer reflects the current state of each chain — not a stale snapshot from minutes ago.
+
+- **Indexing latency:** Sub-second for Solana and Arbitrum; 1–3 seconds for Ethereum and BNB Chain; near-instant for Base and Avalanche.
+- **Historical depth:** Full transaction and event history from each chain's genesis block is available for querying.
+- **WebSocket streaming:** SURCHI exposes live WebSocket feeds so you can receive push notifications the moment a transaction, liquidity event, or price movement occurs — no polling required.
+- **Parallel chain coverage:** All seven supported networks are indexed concurrently, so switching from an Ethereum token to a Solana token never introduces a context-loading delay.
+
+## Professional Charts
+
+SURCHI renders a full suite of professional-grade charts for every token and pair on the platform. Charts update in real time as new transactions land on-chain.
+
+Available chart types include:
+
+- **Candlestick price charts** — OHLCV candles at intervals from 1 minute to 1 week
+- **Volume bars** — Buy and sell volume broken out by color for instant directional reading
+- **Liquidity depth charts** — Visualize available liquidity at each price level across all indexed pools
+- **Holder distribution charts** — Pie and bar breakdowns of the top holder concentration
+- **Transaction flow charts** — Timeline of buys, sells, and transfers with size encoding
+
+<Note>
+  SURCHI's price charts are compatible with TradingView's charting library, giving you access to hundreds of built-in technical indicators — including RSI, MACD, Bollinger Bands, and volume-weighted moving averages — directly within the platform.
+</Note>
+
+## Market Analytics
+
+For every token SURCHI tracks, a full set of market analytics is computed and refreshed continuously:
+
+- **Market Capitalization** — Circulating supply multiplied by current price, updated on every new trade.
+- **Fully Diluted Valuation (FDV)** — Total supply multiplied by current price, giving you a ceiling valuation for tokenomics analysis.
+- **Total Liquidity** — Aggregated liquidity depth summed across every indexed DEX pool for that token.
+- **24-Hour Volume** — Rolling 24-hour swap volume in USD, segmented by buy and sell pressure.
+- **Transaction Count** — Total number of on-chain swaps, transfers, and contract interactions within configurable time windows.
+- **Price Impact Estimates** — Projected slippage for common trade sizes based on real-time pool depth data.
+
+## Community Features
+
+SURCHI includes a set of community tools that help you stay organized, stay informed, and collaborate with other on-chain analysts.
+
+<AccordionGroup>
+  <Accordion title="Watchlists">
+    Create named watchlists to group tokens, wallets, or contracts you want to monitor over time. Watchlists sync across sessions when you connect your wallet or sign in, and you can share a watchlist link with other SURCHI users. Each watchlist entry shows a live price ticker and 24-hour change indicator so you can scan your tracked assets at a glance.
+  </Accordion>
+  <Accordion title="Price Alerts">
+    Set threshold-based price alerts for any token on any supported chain. You define a target price — above or below the current price — and SURCHI fires a notification the moment the condition is met. Alerts can be delivered via browser push notification or linked messaging integrations.
+  </Accordion>
+  <Accordion title="On-Chain Alerts">
+    Go beyond price and trigger alerts on raw on-chain events: large transfers above a custom USD threshold, new liquidity additions or removals, ownership renouncement transactions, or any wallet activity from a tracked address. On-chain alerts give you an early-warning system for both opportunities and risks.
+  </Accordion>
+  <Accordion title="Community Discussion Board">
+    Each token and contract page on SURCHI includes a community discussion board where analysts can share findings, flag risks, and post chart commentary. Posts are linked to on-chain wallet addresses when a user connects their wallet, providing a layer of accountability that anonymous forums lack.
+  </Accordion>
+</AccordionGroup>
+
+## Wallet Connections
+
+Connecting your wallet to SURCHI is optional but unlocks a significantly richer experience. SURCHI supports the following wallet types:
+
+- **Browser extension wallets** — MetaMask (EVM chains), Phantom (Solana), Coinbase Wallet
+- **WalletConnect** — Any WalletConnect-compatible mobile or desktop wallet
+- **Hardware wallets** — Ledger and Trezor via MetaMask or WalletConnect bridge
+
+Once connected, the following features become available:
+
+- **Personalized watchlists** — Your lists persist across devices and browser sessions.
+- **Alert delivery** — Price and on-chain alerts are tied to your wallet identity rather than a browser session.
+- **Portfolio view** — SURCHI automatically detects tokens held by your connected wallet and displays aggregated PnL and holdings.
+- **Community identity** — Discussion board posts are associated with your wallet address, and your on-chain history is publicly verifiable by other users.
+- **Premium access** — Holding or staking $SURCHI tokens while connected activates premium-tier features.
+
+## Cross-Chain Support
+
+SURCHI treats multi-chain coverage as a first-class feature rather than an afterthought. You can search any token address, wallet, or contract across all supported networks from a single search bar — SURCHI automatically detects the correct chain context. Trending dashboards, alerts, and watchlists all aggregate data across chains simultaneously, so you never need to manually switch network contexts to get a complete picture of the market.
+
+For a full breakdown of every supported blockchain — including chain IDs, native tokens, indexed DEXes, and block time details — see the [Supported Networks](/platform/supported-networks) page.
+
+<Tip>
+  Unlock SURCHI's premium analytics tier by holding or staking $SURCHI tokens. Premium features include extended historical data, higher alert limits, advanced wallet intelligence reports, priority AI audit queue access, and early access to new chain integrations. Visit [surchi.xyz](https://surchi.xyz) to learn more about the $SURCHI token and premium plans.
+</Tip>

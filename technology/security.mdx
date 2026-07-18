@@ -1,0 +1,110 @@
+---
+title: "SURCHI Security: Protecting Your Data and Wallet"
+sidebarTitle: "Security"
+description: "Learn how SURCHI protects user data, secures API access, handles wallet connections safely, and maintains platform integrity with encryption and rate limiting."
+---
+
+Security is a foundational requirement of blockchain analytics, not an afterthought. When you use SURCHI, you are trusting the platform with wallet addresses, API credentials, and access to real-time on-chain intelligence. This page explains exactly what SURCHI does to protect your data, how to use the platform safely, and what to do if you believe you have found a security vulnerability.
+
+## Wallet Security
+
+SURCHI is a read-only analytics platform. It reads data from public blockchains — it does not require, request, or store your private keys or seed phrases under any circumstances.
+
+- **SURCHI never asks for your private key or seed phrase.** Any message, website, or person claiming to be SURCHI and requesting your private key or recovery phrase is a scam. SURCHI has no legitimate reason to ever ask for this information.
+- **Wallet connections are read-only.** When you connect a wallet to the SURCHI web app to access tier-gated features, the connection is used solely to verify your $SURCHI balance. No transaction is initiated without your explicit action and on-wallet approval.
+- **No transaction signing without your approval.** If SURCHI ever needs to initiate an on-chain transaction (for example, a future staking feature), it will always be presented to your wallet for explicit confirmation. You will see the full transaction details in your wallet app before signing.
+
+<Warning>
+  **Never share your private key or seed phrase with anyone claiming to be SURCHI.** The SURCHI team will never contact you via DM, email, or support chat to ask for your private key, seed phrase, or any wallet credentials. If you receive such a request, it is a phishing attempt — report it to security@surchi.xyz immediately.
+</Warning>
+
+## API Security
+
+API keys are the primary credential for programmatic access to SURCHI. They are generated with strong entropy and come with built-in scope controls to limit the blast radius of any accidental exposure.
+
+- **256-bit entropy.** Every API key is generated using a cryptographically secure random number generator with 256 bits of entropy, making brute-force enumeration computationally infeasible.
+- **Scoped keys.** When you create an API key, you choose its scope — read-only keys can query data but cannot modify account settings or trigger write operations. Read-write keys are available for features that require them and should be issued with the minimum scope necessary.
+- **Instant rotation.** You can revoke and replace any API key at any time from your dashboard with no downtime. If you suspect a key has been compromised, rotate it immediately — the old key becomes invalid the moment you regenerate.
+
+<Note>
+  Always store your API keys in environment variables or a secrets manager — never hardcode them directly into source code or commit them to a version control repository. If a key is accidentally exposed in a public repository, rotate it immediately and treat it as compromised.
+</Note>
+
+## Authentication
+
+All communication with the SURCHI platform uses modern, industry-standard authentication and transport security protocols.
+
+- **HTTPS / TLS 1.3** — All API traffic is encrypted in transit using TLS 1.3. Connections using older TLS versions or plain HTTP are rejected. Certificate pinning is available for mobile and native API clients that require it.
+- **API key authentication** — Every API request must include a valid API key passed in the `Authorization` header. See the [Authentication](/developer/api/authentication) reference for the exact header format and examples.
+- **OAuth 2.0** — The SURCHI web application uses OAuth 2.0 for user account login. Access tokens are short-lived and automatically refreshed. Refresh tokens are stored using secure, `HttpOnly` cookies not accessible to JavaScript.
+
+## Rate Limiting
+
+Rate limits protect the platform for all users and serve as an early-warning signal if your API key is being misused. Limits apply per API key and reset on a rolling window basis.
+
+| Plan | Requests / min | Requests / day |
+|---|---|---|
+| Free | 10 | 1,000 |
+| Standard | 60 | 10,000 |
+| Pro | 300 | 100,000 |
+| Elite | 1,000 | Unlimited |
+
+When you exceed your rate limit, the API returns a `429 Too Many Requests` response with a `Retry-After` header indicating how many seconds to wait before retrying. If you are consistently hitting rate limits, consider upgrading your tier or optimising your query patterns using the caching strategies described in the [Architecture](/technology/architecture) documentation.
+
+## Data Encryption
+
+Your data is protected both when it is being transmitted and when it is stored.
+
+- **Encryption in transit.** All data exchanged between your client and the SURCHI platform is encrypted using TLS 1.3. This applies to the REST API, WebSocket connections, the web application, and webhook deliveries to your endpoints.
+- **Encryption at rest.** All user account data, API keys (stored as hashed values, never in plaintext), and analytics preferences are encrypted at rest using AES-256. Database backups are encrypted with the same standard.
+- **API keys are never stored in plaintext.** When you create an API key, SURCHI shows it to you once and then stores only a non-reversible hash. If you lose your key, you must rotate it — there is no "reveal" option because the original value is not retained.
+- **Webhook payloads are signed.** Every webhook delivery includes a cryptographic signature in the `X-SURCHI-Signature` header so you can verify that the payload originated from SURCHI and has not been tampered with in transit.
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Rotate API keys regularly">
+    Even if you have no reason to suspect a key has been compromised, rotating your API keys on a regular schedule (every 90 days is a reasonable baseline) limits the window of exposure if a key is leaked through logs, error messages, or a third-party service you use. Key rotation is instant and non-disruptive — generate the new key, update your environment, then revoke the old one.
+  </Accordion>
+
+  <Accordion title="Use webhook signature verification">
+    If you use SURCHI webhooks to receive real-time event notifications, always verify the `X-SURCHI-Signature` header on every incoming request before processing the payload. This protects your endpoint from spoofed or replayed webhook deliveries. The signature is a HMAC-SHA256 hash of the raw request body using your webhook secret as the key — verify it server-side before trusting the data.
+  </Accordion>
+
+  <Accordion title="Monitor your API usage for anomalies">
+    Review your API usage dashboard regularly for unexpected spikes in request volume, unusual access patterns (requests at unusual hours, from unfamiliar IP ranges), or queries for data you did not initiate. Unexpected usage is often the first indicator that a key has been exposed. SURCHI provides per-key usage metrics in your dashboard to make this easy.
+  </Accordion>
+
+  <Accordion title="Enable 2FA on your SURCHI account">
+    Two-factor authentication (2FA) adds a second layer of protection to your account login beyond your password. If your password is ever compromised, 2FA prevents an attacker from accessing your account, modifying API keys, or changing account settings. Enable 2FA in your account security settings using any TOTP-compatible authenticator app (such as Google Authenticator, Authy, or 1Password).
+  </Accordion>
+</AccordionGroup>
+
+## Responsible Disclosure
+
+If you discover a security vulnerability in the SURCHI platform, we ask that you report it responsibly rather than disclosing it publicly before we have had the opportunity to investigate and remediate.
+
+**To report a vulnerability:**
+
+1. Email a detailed description of the issue to **security@surchi.xyz**
+2. Include steps to reproduce the vulnerability, the potential impact, and any proof-of-concept if available
+3. Use the subject line: `[Security Disclosure] <brief description>`
+
+**Our commitment to you:**
+
+- We will acknowledge receipt of your report within **48 hours**
+- We will provide an initial assessment of the severity and scope within **7 business days**
+- We follow a **90-day disclosure timeline** — we ask that you do not publicly disclose the vulnerability for 90 days from the date of your report, giving us time to develop and ship a fix
+- We will credit researchers who report valid vulnerabilities in our public security acknowledgements, unless you prefer to remain anonymous
+
+We do not take legal action against researchers who act in good faith and follow this responsible disclosure policy.
+
+## Security Audits
+
+SURCHI operates an ongoing security audit programme to ensure the platform and its smart contracts meet industry security standards.
+
+- The $SURCHI token contract and any future staking contracts are audited by independent third-party security firms before deployment to mainnet. Audit reports are published publicly.
+- The SURCHI web application and API infrastructure undergo periodic penetration testing by external security researchers.
+- Findings from audits are triaged by severity, and critical and high-severity issues are remediated before the relevant code ships to production.
+
+Completed audit reports are published and linked from the [Security](/technology/security) page as they become available.

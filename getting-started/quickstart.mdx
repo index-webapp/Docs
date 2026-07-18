@@ -1,0 +1,91 @@
+---
+title: "Get Started with SURCHI in Minutes"
+sidebarTitle: "Quickstart"
+description: "Learn how to search tokens, run AI contract audits, and analyze wallets on SURCHI. Get up and running in under 5 minutes."
+---
+
+You don't need an account, API key, or any technical knowledge to start using SURCHI. The platform is open to everyone — just open your browser, navigate to [surchi.xyz](https://surchi.xyz), and you have immediate access to real-time token data, AI contract audits, and wallet analytics across seven blockchains. This guide walks you through the five most important things you can do right now, from exploring your first token to setting up live alerts.
+
+<Steps>
+  <Step title="Visit the Platform">
+    Open [surchi.xyz](https://surchi.xyz) in your browser. No account registration is required to browse the platform. You'll land on the SURCHI home dashboard, which shows trending tokens, recent high-volume contracts, and market-wide activity across all supported chains.
+
+    Use the **chain selector** in the top navigation bar to filter the dashboard to a specific blockchain — Ethereum, BNB Chain, Solana, Polygon, Base, Avalanche, or Arbitrum. The dashboard updates in real time, so the data you see reflects current market conditions.
+  </Step>
+  <Step title="Search a Token">
+    Click the **search bar** at the top of the page and paste a contract address or type a token name or ticker symbol. SURCHI searches across all indexed chains simultaneously and returns matching results with live price, 24-hour volume, market cap, and a quick-view AI risk score.
+
+    For example, try searching for a Solana token by its contract address:
+
+    ```
+    EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+    ```
+
+    That's the USDC token on Solana. Clicking any result opens the full **Token Profile** page, where you'll find price charts, holder analytics, liquidity depth, recent transactions, and the AI audit report.
+  </Step>
+  <Step title="Run an AI Audit">
+    From any Token Profile page, click the **AI Audit** tab. SURCHI's AI Engine analyzes the contract's bytecode and, where available, verified source code — then returns a structured risk report.
+
+    The report includes:
+
+    - **Risk Score** (0–100) — a composite score based on detected vulnerability severity and pattern confidence.
+    - **Findings** — a categorized list of flagged issues, each with a plain-language explanation of what the finding means and why it matters.
+    - **Ownership & Permissions** — a breakdown of privileged functions, admin keys, and upgrade mechanisms present in the contract.
+    - **Liquidity Lock Status** — whether the contract's liquidity is locked or can be withdrawn by the deployer.
+
+    <Warning>
+      A low risk score is a positive signal, not a guarantee of safety. Always combine AI audit results with your own research. SURCHI audit reports are analytical tools, not financial or security advice.
+    </Warning>
+  </Step>
+  <Step title="Analyze a Wallet">
+    Navigate to the **Wallet** section using the top navigation, or paste any wallet address directly into the search bar. SURCHI will fetch the full activity history for that address across all supported chains and build a structured profile.
+
+    Your wallet analysis view includes:
+
+    - **PnL Summary** — realized and unrealized profit and loss across all token positions.
+    - **Portfolio Breakdown** — current holdings by token and chain, with live value calculations.
+    - **Trading History** — a chronological feed of all swaps, transfers, and contract interactions.
+    - **Behavioral Insights** — patterns such as bot-like activity, insider timing, or wash trading flags surfaced by SURCHI's wallet intelligence models.
+
+    You can analyze any public wallet address — your own, a known whale, a protocol treasury, or a wallet you're researching before copy-trading.
+  </Step>
+  <Step title="Set Up Alerts">
+    Once you've found tokens or wallets you want to track, use SURCHI's **Alerts** system to get notified when key conditions are met — without having to watch the platform manually.
+
+    To create an alert:
+
+    1. Open a Token Profile or Wallet page.
+    2. Click the **Set Alert** button (bell icon) near the top of the page.
+    3. Choose your alert type: **Price Alert**, **Volume Alert**, **Large Transaction Alert**, or **New Contract Interaction Alert**.
+    4. Set your trigger condition (e.g., price rises above `$0.50`, or a transaction exceeds `$100,000`).
+    5. Choose your notification channel: **in-app**, **email**, or **webhook**.
+    6. Save the alert. It activates immediately.
+
+    Alerts fire in real time via SURCHI's WebSocket infrastructure — typically within seconds of the triggering on-chain event being confirmed.
+  </Step>
+</Steps>
+
+<Tip>
+  Connect your wallet on [surchi.xyz](https://surchi.xyz) to unlock personalized watchlists, saved searches, and alert history that persist across sessions. Any EVM-compatible wallet (MetaMask, Rabby, Coinbase Wallet) or Solana wallet (Phantom, Backpack, Solflare) works. Connecting your wallet also enables $SURCHI token-gated premium features such as unlimited AI audits and advanced wallet analytics.
+</Tip>
+
+## What's Next?
+
+Now that you're up and running, explore the deeper capabilities of each platform module or plug SURCHI's data directly into your own applications.
+
+<CardGroup cols={2}>
+  <Card
+    title="Token Explorer Docs"
+    icon="magnifying-glass-chart"
+    href="/platform/explorer"
+  >
+    Learn how to use filters, comparison views, trending feeds, and advanced token metrics inside the SURCHI Token Explorer.
+  </Card>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/developer/api/overview"
+  >
+    Integrate SURCHI into your own app or trading infrastructure. Browse the full REST API reference, WebSocket docs, and SDK quickstart.
+  </Card>
+</CardGroup>

@@ -1,0 +1,174 @@
+---
+title: "SURCHI JavaScript and TypeScript SDK Reference"
+sidebarTitle: "JavaScript SDK"
+description: "Complete guide to using the @surchi/sdk package in JavaScript and TypeScript: installation, authentication, token queries, wallet analysis, and contract audits."
+---
+
+The `@surchi/sdk` package is the official JavaScript and TypeScript client for the SURCHI API. It supports all modern runtimes — Node.js 18+, Bun, Deno, and browser environments — and ships with bundled TypeScript declarations so you get full type safety and autocompletion without any additional setup.
+
+## Installation
+
+<CodeGroup>
+
+```bash npm
+npm install @surchi/sdk
+```
+
+```bash yarn
+yarn add @surchi/sdk
+```
+
+```bash pnpm
+pnpm add @surchi/sdk
+```
+
+</CodeGroup>
+
+## TypeScript Setup
+
+The SDK bundles its own type definitions — you do not need to install a separate `@types` package. If your project uses TypeScript, make sure your `tsconfig.json` targets at least `ES2017` and has `moduleResolution` set to `node16` or `bundler` to correctly resolve the package exports.
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "moduleResolution": "node16",
+    "strict": true
+  }
+}
+```
+
+<Tip>
+  Use TypeScript for the best developer experience. Every method return value, option object, and error class is fully typed, which means your editor will flag incorrect network names, missing required fields, and invalid option combinations at edit time rather than at runtime.
+</Tip>
+
+## Initialization
+
+Create a single `Surchi` instance and reuse it across your application. The constructor accepts your API key along with optional defaults that are applied to every subsequent request.
+
+```typescript
+import { Surchi } from '@surchi/sdk';
+
+const surchi = new Surchi({
+  apiKey: process.env.SURCHI_API_KEY!,
+  // Optional: default network applied to every request unless overridden
+  defaultNetwork: 'solana',
+  // Optional: request timeout in milliseconds (default: 30000)
+  timeout: 10000
+});
+```
+
+## Tokens Module
+
+The `surchi.tokens` namespace lets you fetch token metadata, search by name or ticker, and inspect holder distributions in real time.
+
+```typescript
+// Get token data
+const token = await surchi.tokens.get(
+  'So11111111111111111111111111111111111111112',
+  { network: 'solana' }
+);
+console.log(token.price_usd, token.market_cap, token.risk_score);
+
+// Search tokens
+const results = await surchi.tokens.search('PEPE', {
+  network: 'ethereum',
+  limit: 10
+});
+
+// Get token holders
+const holders = await surchi.tokens.holders(
+  '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+  { network: 'ethereum', limit: 100 }
+);
+```
+
+## Wallets Module
+
+Use `surchi.wallets` to analyze any on-chain wallet — whether it belongs to a known trader, a smart money address, or a wallet you're monitoring for your users.
+
+```typescript
+// Analyze wallet
+const wallet = await surchi.wallets.analyze(
+  '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
+  { network: 'solana' }
+);
+
+// Get PnL
+const pnl = await surchi.wallets.pnl(
+  '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
+  { network: 'solana', timeframe: '30d' }
+);
+console.log(`Realized PnL: $${pnl.realized_usd}`);
+
+// Get portfolio
+const portfolio = await surchi.wallets.portfolio(
+  '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
+  { network: 'solana' }
+);
+```
+
+## Contracts Module
+
+The `surchi.contracts` namespace runs SURCHI's AI-powered audit engine against any smart contract address and returns a structured risk report.
+
+```typescript
+// Run AI audit
+const audit = await surchi.contracts.audit(
+  'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+  { network: 'solana' }
+);
+
+console.log(`Risk Score: ${audit.risk_score}/100`);
+console.log(`Honeypot: ${audit.checks.honeypot}`);
+console.log(`AI Summary: ${audit.ai_summary}`);
+```
+
+## Liquidity Module
+
+`surchi.liquidity` finds the most efficient swap path across all supported DEXes for a given input and output token pair.
+
+```typescript
+// Get optimal swap route
+const route = await surchi.liquidity.route({
+  input_token: 'SOL',
+  output_token: 'USDC',
+  amount: 1.0,
+  network: 'solana',
+  slippage: 0.5
+});
+
+console.log(`Best DEX: ${route.best_route.dex}`);
+console.log(`Output: ${route.best_route.output_amount} USDC`);
+```
+
+## Error Handling
+
+The SDK exports distinct error classes for the most common failure modes. Catching them individually lets you apply the right retry or fallback strategy for each case.
+
+```typescript
+import { SurchiError, RateLimitError, NotFoundError } from '@surchi/sdk';
+
+try {
+  const token = await surchi.tokens.get(address, { network: 'solana' });
+} catch (err) {
+  if (err instanceof RateLimitError) {
+    console.log(`Rate limited. Retry after ${err.retryAfter}s`);
+  } else if (err instanceof NotFoundError) {
+    console.log('Token not found on this network');
+  } else if (err instanceof SurchiError) {
+    console.log(`API error: ${err.message} (${err.code})`);
+  }
+}
+```
+
+## Pagination
+
+Methods that return lists — such as `tokens.holders` — support automatic pagination through an async iterator. The iterator fetches the next page on demand, so you only make as many requests as you actually need.
+
+```typescript
+// Iterate through all holders with auto-pagination
+for await (const holder of surchi.tokens.holdersIterator(address, { network: 'solana' })) {
+  console.log(holder.address, holder.balance);
+}
+```

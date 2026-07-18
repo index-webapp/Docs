@@ -1,0 +1,154 @@
+---
+title: "SURCHI Explorer: Token, Wallet, and Contract Search"
+sidebarTitle: "Explorer"
+description: "Search and analyze tokens, smart contracts, wallets, liquidity pairs, and on-chain transactions across all supported networks with the SURCHI Explorer."
+---
+
+The SURCHI Explorer is your primary entry point for on-chain research. From a single search bar you can retrieve comprehensive data on any token, smart contract, wallet address, or liquidity pair across all supported networks — with results loading in real time from SURCHI's continuously updated blockchain index. Whether you are evaluating a newly launched Solana memecoin, auditing an Ethereum DeFi contract, or profiling a whale wallet on BNB Chain, the Explorer surfaces the data you need without requiring you to switch between block explorers, DEX aggregators, and analytics dashboards.
+
+## Search Capabilities
+
+<Tabs>
+  <Tab title="Token Search">
+    Search for any token by its name, ticker symbol, or contract address. SURCHI resolves the query against all indexed chains simultaneously and returns matching tokens ranked by liquidity and trading volume. Clicking a result opens the full token analytics page with price charts, holder data, transaction history, and risk indicators.
+
+    **Searching by address** is the most precise method and is recommended when dealing with newly launched or similarly named tokens. Paste the full contract address directly into the search bar and SURCHI will identify the chain automatically.
+
+    Example addresses to try:
+
+    | Chain    | Token  | Address                                      |
+    |----------|--------|----------------------------------------------|
+    | Ethereum | USDT   | `0xdAC17F958D2ee523a2206206994597C13D831ec7` |
+    | BNB Chain | CAKE  | `0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82` |
+    | Solana   | SOL (Wrapped) | `So11111111111111111111111111111111111111112` |
+
+    **Searching by name or symbol** returns a ranked list. SURCHI prioritizes verified tokens with higher liquidity at the top of results to minimize the risk of landing on an impersonator token.
+  </Tab>
+  <Tab title="Contract Lookup">
+    Paste any smart contract address to retrieve its full on-chain metadata. SURCHI surfaces the following contract details wherever available:
+
+    - **Verified source code** — If the contract is verified on a supported block explorer, SURCHI displays the Solidity or Vyper source alongside the raw bytecode.
+    - **ABI** — The contract's Application Binary Interface, enabling you to inspect callable functions and events.
+    - **Deployment information** — Deployer wallet address, deployment transaction hash, block number, and timestamp.
+    - **Proxy detection** — SURCHI identifies proxy patterns (EIP-1967, EIP-1822, transparent proxies) and links to the underlying implementation contract.
+    - **Contract interactions** — A timeline of the most recent transactions that called the contract, including decoded function names and argument values.
+
+    Contract lookup is particularly useful as a complement to the AI Contract Audit module — you can review the raw source and deployment context before or after running an automated audit.
+  </Tab>
+  <Tab title="Wallet Lookup">
+    Enter any wallet address to open the Wallet Intelligence view. From the Explorer search results page you will see a summary card for the wallet showing its current token balances, recent transaction count, and first-seen date on chain. Clicking through opens the full wallet profile with:
+
+    - **Holdings breakdown** — All tokens held, valued in USD at current prices.
+    - **Transaction history** — Chronological list of all swaps, transfers, and contract interactions.
+    - **PnL analysis** — Realized and unrealized profit/loss per token, computed from cost basis and exit prices.
+    - **Behavior classification** — SURCHI's wallet intelligence engine classifies wallets as retail, whale, bot, sniper, or insider based on on-chain behavioral patterns.
+
+    Wallet lookup is the entry point to the full [Wallet Intelligence](/platform/wallet-intelligence) module. See that page for a complete description of all available profiling features.
+  </Tab>
+  <Tab title="Liquidity & Pairs">
+    Search for liquidity pairs and pools directly. You can look up a pair by entering both token addresses separated by a slash (e.g., `0xTokenA/0xTokenB`), or you can find all pools for a single token by entering its contract address and navigating to the **Pairs** tab on the token page.
+
+    SURCHI detects pools across all major DEXes on each supported chain and aggregates the following per-pool data:
+
+    - **Pool address** — The on-chain address of the liquidity pool contract.
+    - **DEX protocol** — Which DEX and version hosts the pool (e.g., Uniswap V3, PancakeSwap V2, Raydium CLMM).
+    - **Total Value Locked (TVL)** — Current liquidity depth in USD.
+    - **Fee tier** — The swap fee percentage charged by the pool.
+    - **24-hour volume** — Rolling swap volume through this specific pool.
+    - **Lock status** — Whether the liquidity provider tokens are locked, and if so, the unlock date and locker platform.
+  </Tab>
+</Tabs>
+
+## Token Data Points
+
+Every token page in the SURCHI Explorer displays a standardized set of data fields. The table below describes each field and provides an example of what you will see in practice.
+
+| Field | Description | Example |
+|---|---|---|
+| **Market Cap** | Current price × circulating supply, refreshed on every trade | $4,200,000 |
+| **FDV** | Current price × total max supply; reflects ceiling valuation | $12,000,000 |
+| **Liquidity** | Aggregate USD value of tokens locked in all indexed DEX pools | $870,000 |
+| **24h Volume** | Total swap volume in USD over the rolling 24-hour window | $340,000 |
+| **Transactions** | Number of on-chain swap and transfer events in the last 24 hours | 1,842 txns |
+| **Tax (Buy)** | Percentage fee deducted from buyer on each purchase transaction | 2% |
+| **Tax (Sell)** | Percentage fee deducted from seller on each sale transaction | 5% |
+| **Ownership** | Whether the contract owner role is held by a wallet or has been renounced | Renounced |
+| **Risk Score** | SURCHI AI-generated composite risk rating from 0 (safe) to 100 (critical) | 18 / 100 |
+| **Token Verification** | Whether the token contract source is verified on a supported block explorer | ✅ Verified |
+
+## Holder Analysis
+
+The **Holders** tab on any token page gives you a granular view of who owns the token and how concentrated that ownership is.
+
+- **Top holder list** — The 100 largest holding wallets ranked by balance, each shown as a percentage of total supply. Click any address to open its wallet profile.
+- **Concentration metrics** — SURCHI calculates what percentage of supply is held by the top 10, top 20, and top 50 wallets, giving you an at-a-glance sense of centralization risk.
+- **Whale detection** — Wallets holding more than 1% of total supply are automatically flagged as whales. You can set a custom threshold for your own analysis.
+- **Insider wallet identification** — SURCHI's behavioral engine cross-references early buyers against the deployer wallet's transaction graph to flag addresses that may be connected to the team or pre-launch insiders.
+- **Holder growth chart** — A time-series chart of unique holder count over the token's lifetime, helping you distinguish organic adoption from manufactured metrics.
+
+## Risk Detection
+
+SURCHI automatically evaluates every indexed token against a set of on-chain risk indicators. These checks run continuously and update whenever new contract interactions or ownership changes are detected.
+
+<CardGroup cols={2}>
+  <Card title="Honeypot Detection" icon="spider-web">
+    SURCHI simulates buy and sell transactions against the token contract in a sandboxed environment. If the simulation detects that sell transactions revert or fail — a classic honeypot signature — the token is flagged immediately and a prominent warning is displayed on its page.
+  </Card>
+  <Card title="Tax Analysis" icon="percent">
+    Buy and sell tax rates are extracted directly from contract bytecode and confirmed through live transaction simulation. Tokens with taxes above 10% on either side are highlighted, and any discrepancy between declared and actual tax rates is flagged as a critical risk indicator.
+  </Card>
+  <Card title="Ownership Renouncement" icon="key">
+    SURCHI tracks the contract owner address and monitors for renouncement transactions in real time. Tokens where the owner has not renounced control — particularly those with mint or blacklist functions — receive an elevated risk score until renouncement is confirmed on-chain.
+  </Card>
+  <Card title="Liquidity Lock Status" icon="lock">
+    SURCHI checks whether the LP tokens for each pool are locked via a recognized locker contract (e.g., Unicrypt, Team.Finance, Raydium's native lock). Unlocked liquidity is a leading indicator of potential rugpull risk and is surfaced prominently in the token risk summary.
+  </Card>
+</CardGroup>
+
+## DEX Routing & Pool Detection
+
+SURCHI automatically discovers and indexes every liquidity pool associated with a token by scanning factory contract events across all supported DEX protocols. You do not need to specify which DEX to look on — SURCHI checks all of them.
+
+Indexed DEX protocols include:
+
+- **Ethereum:** Uniswap V2, Uniswap V3, SushiSwap, Curve
+- **BNB Chain:** PancakeSwap V2, PancakeSwap V3, BiSwap
+- **Solana:** Raydium AMM, Raydium CLMM, Orca Whirlpools, Pump.fun bonding curves, Jupiter-routed pools
+- **Polygon:** QuickSwap, Uniswap V3
+- **Base:** Uniswap V3, Aerodrome
+- **Avalanche:** Trader Joe V1/V2, Pangolin
+- **Arbitrum:** Uniswap V3, Camelot V2/V3
+
+When multiple pools exist for the same token pair, SURCHI aggregates their combined liquidity and displays each pool individually so you can see where volume is concentrated. The smart liquidity routing engine uses this pool graph to calculate optimal swap paths — see the [Liquidity Routing](/platform/liquidity-routing) page for details.
+
+## Transaction Explorer
+
+The **Transactions** tab on any token or wallet page gives you a filterable, real-time feed of on-chain activity:
+
+- **Transaction types** — Filter by swaps, transfers, liquidity additions, liquidity removals, or contract calls.
+- **Direction** — Show only buys, only sells, or both directions of swap activity.
+- **Size filter** — Set a minimum USD value to focus on significant transactions and filter out dust.
+- **Wallet labels** — Known wallets (exchanges, protocols, flagged actors) are labeled automatically so you can spot significant counterparties at a glance.
+- **Decoded data** — For verified contracts, function names and decoded argument values are shown alongside the raw transaction hash, making it easy to understand what each transaction actually did.
+- **Real-time updates** — New transactions appear in the feed within seconds of on-chain confirmation without requiring a page refresh.
+
+## Search Examples
+
+The following addresses can be pasted directly into the SURCHI search bar to explore the Explorer's capabilities:
+
+```bash
+# Solana — Wrapped SOL token mint
+So11111111111111111111111111111111111111112
+
+# Ethereum — Tether USD (USDT)
+0xdAC17F958D2ee523a2206206994597C13D831ec7
+
+# BNB Chain — PancakeSwap Token (CAKE)
+0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82
+```
+
+You can also search by token name or symbol (e.g., `USDT`, `CAKE`, `SOL`) and use the chain filter dropdown to narrow results to a specific network when dealing with tokens that share a ticker across chains.
+
+<Warning>
+  SURCHI's risk scores, honeypot checks, and audit flags are automated analytical tools designed to assist your research — they are not financial advice and do not constitute a guarantee of safety. Automated systems can produce false positives and false negatives. Always conduct your own due diligence before making any investment decision, and never invest more than you can afford to lose.
+</Warning>

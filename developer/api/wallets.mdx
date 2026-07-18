@@ -1,0 +1,302 @@
+---
+title: "Wallet API Endpoints: PnL, Portfolio, and Trading History"
+sidebarTitle: "Wallets"
+description: "REST API endpoints for wallet analytics including PnL calculation, token portfolio, NFT holdings, trading history, and whale detection across all networks."
+---
+
+The Wallets API lets you look up any on-chain wallet address and retrieve a comprehensive picture of its activity — current token holdings, realised and unrealised profit and loss, historical trades, and aggregate performance statistics. All wallet endpoints are read-only and require the `read:wallets` scope on your API key.
+
+---
+
+## GET /v1/wallets/{address}
+
+Retrieve a high-level overview of a wallet, including its total portfolio value, network activity, and a summary of recent performance.
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `address` | string | Yes (path) | The wallet's public address |
+| `network` | string | Yes (query) | Network identifier: `ethereum`, `bnb`, `solana`, `polygon`, `base`, `avalanche`, or `arbitrum` |
+
+### Example Request
+
+<CodeGroup>
+  ```bash cURL
+  curl -X GET "https://api.surchi.xyz/v1/wallets/7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU?network=solana" \
+    -H "Authorization: Bearer YOUR_API_KEY"
+  ```
+
+  ```javascript JavaScript
+  const address = '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU';
+
+  const response = await fetch(
+    `https://api.surchi.xyz/v1/wallets/${address}?network=solana`,
+    {
+      headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+    }
+  );
+  const data = await response.json();
+  console.log(data);
+  ```
+</CodeGroup>
+
+### Example Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+    "network": "solana",
+    "portfolio_value_usd": 28450.72,
+    "total_tokens_held": 14,
+    "total_trades_all_time": 342,
+    "first_active": "2021-11-04T09:12:00Z",
+    "last_active": "2024-01-15T09:58:00Z",
+    "is_whale": false,
+    "pnl_30d_usd": 3929.50,
+    "roi_30d_pct": 12.4
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "network": "solana",
+    "latency_ms": 55
+  }
+}
+```
+
+---
+
+## GET /v1/wallets/{address}/portfolio
+
+Retrieve all token holdings for a wallet, including current value, unrealised PnL, and allocation percentage for each position.
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `address` | string | Yes (path) | The wallet's public address |
+| `network` | string | Yes (query) | Network identifier |
+| `limit` | integer | No | Results per page. Default: `20`, max: `100` |
+| `cursor` | string | No | Pagination cursor from a previous response |
+
+### Example Request
+
+<CodeGroup>
+  ```bash cURL
+  curl -X GET "https://api.surchi.xyz/v1/wallets/7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU/portfolio?network=solana" \
+    -H "Authorization: Bearer YOUR_API_KEY"
+  ```
+
+  ```javascript JavaScript
+  const address = '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU';
+
+  const response = await fetch(
+    `https://api.surchi.xyz/v1/wallets/${address}/portfolio?network=solana`,
+    {
+      headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+    }
+  );
+  const { data } = await response.json();
+  // data is an array of token positions
+  ```
+</CodeGroup>
+
+### Example Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "token_address": "So11111111111111111111111111111111111111112",
+      "symbol": "SOL",
+      "name": "Wrapped SOL",
+      "balance": 48.523,
+      "price_usd": 185.42,
+      "value_usd": 8999.10,
+      "cost_basis_usd": 7850.00,
+      "unrealised_pnl_usd": 1149.10,
+      "unrealised_pnl_pct": 14.64,
+      "allocation_pct": 31.6
+    },
+    {
+      "token_address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "symbol": "USDC",
+      "name": "USD Coin",
+      "balance": 5200.00,
+      "price_usd": 1.0001,
+      "value_usd": 5200.52,
+      "cost_basis_usd": 5200.00,
+      "unrealised_pnl_usd": 0.52,
+      "unrealised_pnl_pct": 0.01,
+      "allocation_pct": 18.3
+    }
+  ],
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "next_cursor": null,
+    "limit": 20,
+    "total": 14
+  }
+}
+```
+
+---
+
+## GET /v1/wallets/{address}/pnl
+
+Retrieve a profit and loss summary for a wallet over a specified timeframe. Returns realised PnL from closed positions, unrealised PnL on current holdings, and an overall ROI percentage.
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `address` | string | Yes (path) | The wallet's public address |
+| `network` | string | Yes (query) | Network identifier |
+| `timeframe` | string | No | Lookback window: `24h`, `7d`, `30d`, or `all`. Default: `30d` |
+
+### Example Request
+
+<CodeGroup>
+  ```bash cURL
+  curl -X GET "https://api.surchi.xyz/v1/wallets/7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU/pnl?network=solana&timeframe=30d" \
+    -H "Authorization: Bearer YOUR_API_KEY"
+  ```
+
+  ```javascript JavaScript
+  const address = '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU';
+
+  const response = await fetch(
+    `https://api.surchi.xyz/v1/wallets/${address}/pnl?network=solana&timeframe=30d`,
+    {
+      headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+    }
+  );
+  const data = await response.json();
+  console.log(data.data.pnl);
+  ```
+</CodeGroup>
+
+### Example Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "wallet": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+    "network": "solana",
+    "pnl": {
+      "realized_usd": 4250.00,
+      "unrealized_usd": -320.50,
+      "total_usd": 3929.50,
+      "roi_pct": 12.4
+    },
+    "timeframe": "30d"
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "network": "solana",
+    "latency_ms": 61
+  }
+}
+```
+
+### PnL Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `realized_usd` | number | Profit or loss locked in from fully closed positions |
+| `unrealized_usd` | number | Current open position gain/loss at present prices |
+| `total_usd` | number | Sum of realized and unrealized PnL |
+| `roi_pct` | number | Return on investment as a percentage of cost basis |
+
+<Note>
+  A negative `unrealized_usd` with a positive `total_usd` indicates the wallet has booked more profit than its current open losses. All PnL values are denominated in USD at current exchange rates.
+</Note>
+
+---
+
+## GET /v1/wallets/{address}/trades
+
+Retrieve a paginated trading history for a wallet. Each entry represents a swap, buy, or sell event. You can optionally filter by a specific token to see all trades involving that asset.
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `address` | string | Yes (path) | The wallet's public address |
+| `network` | string | Yes (query) | Network identifier |
+| `limit` | integer | No | Results per page. Default: `20`, max: `100` |
+| `cursor` | string | No | Pagination cursor from a previous response |
+| `token` | string | No | Filter trades to those involving this token address |
+
+### Example Request
+
+<CodeGroup>
+  ```bash cURL
+  # All trades for a wallet
+  curl -X GET "https://api.surchi.xyz/v1/wallets/7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU/trades?network=solana&limit=10" \
+    -H "Authorization: Bearer YOUR_API_KEY"
+
+  # Trades filtered by a specific token
+  curl -X GET "https://api.surchi.xyz/v1/wallets/7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU/trades?network=solana&token=So11111111111111111111111111111111111111112" \
+    -H "Authorization: Bearer YOUR_API_KEY"
+  ```
+
+  ```javascript JavaScript
+  const address = '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU';
+
+  const params = new URLSearchParams({
+    network: 'solana',
+    limit: '10',
+    // Optionally filter by token:
+    // token: 'So11111111111111111111111111111111111111112'
+  });
+
+  const response = await fetch(
+    `https://api.surchi.xyz/v1/wallets/${address}/trades?${params}`,
+    {
+      headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+    }
+  );
+  const { data, meta } = await response.json();
+  ```
+</CodeGroup>
+
+### Example Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "tx_hash": "5J4eUP9mNhGvbFzqMxCWkjMnqLeV3PvX7Hk9oUmRtYd8wBsAzKi1NpXqReLmVoY",
+      "type": "buy",
+      "timestamp": "2024-01-14T17:43:22Z",
+      "token_in": {
+        "address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "symbol": "USDC",
+        "amount": 1000.00,
+        "value_usd": 1000.00
+      },
+      "token_out": {
+        "address": "So11111111111111111111111111111111111111112",
+        "symbol": "SOL",
+        "amount": 5.394,
+        "value_usd": 1000.00
+      },
+      "dex": "Jupiter",
+      "fee_usd": 0.25,
+      "price_impact_pct": 0.02
+    }
+  ],
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "next_cursor": "eyJ0eCI6IjVKNGVV...In0",
+    "limit": 10,
+    "total": 342
+  }
+}
+```

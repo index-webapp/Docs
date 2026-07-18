@@ -1,0 +1,155 @@
+---
+title: "SURCHI REST API: Real-Time Blockchain Analytics for Developers"
+sidebarTitle: "Overview"
+description: "The SURCHI API provides programmatic access to token data, wallet analytics, AI contract audits, and liquidity routing across 7+ blockchains. JSON REST API."
+---
+
+The SURCHI REST API gives you programmatic access to the full breadth of on-chain data powering the SURCHI platform — token analytics, wallet PnL, AI-driven contract audits, and DEX liquidity routing across Ethereum, BNB Chain, Solana, Polygon, Base, Avalanche, and Arbitrum. Every response is a predictable JSON envelope, making it straightforward to integrate SURCHI data into trading bots, portfolio dashboards, security tooling, and any other application that depends on reliable blockchain intelligence.
+
+## Base URL
+
+All API requests are made over HTTPS to the following base URL. HTTP requests are not supported.
+
+```
+https://api.surchi.xyz/v1
+```
+
+## Quick Start
+
+Get up and running with your first API call in under two minutes.
+
+<Steps>
+  <Step title="Get your API key">
+    Sign in to your account at [surchi.xyz/dashboard](https://surchi.xyz/dashboard) and navigate to **Settings → API Keys**. Click **Create New Key**, give it a name, choose its scope, and copy the key. It is shown only once — store it somewhere safe immediately.
+  </Step>
+  <Step title="Make your first request">
+    Use the examples below to query token data for wrapped SOL on Solana. Replace `YOUR_API_KEY` with the key you just copied.
+
+    <CodeGroup>
+      ```bash cURL
+      curl -X GET "https://api.surchi.xyz/v1/tokens/So11111111111111111111111111111111111111112?network=solana" \
+        -H "Authorization: Bearer YOUR_API_KEY" \
+        -H "Content-Type: application/json"
+      ```
+
+      ```javascript JavaScript
+      const response = await fetch(
+        'https://api.surchi.xyz/v1/tokens/So11111111111111111111111111111111111111112?network=solana',
+        {
+          headers: {
+            'Authorization': 'Bearer YOUR_API_KEY',
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      ```
+
+      ```python Python
+      import requests
+
+      response = requests.get(
+          'https://api.surchi.xyz/v1/tokens/So11111111111111111111111111111111111111112',
+          params={'network': 'solana'},
+          headers={'Authorization': 'Bearer YOUR_API_KEY'}
+      )
+      print(response.json())
+      ```
+    </CodeGroup>
+  </Step>
+  <Step title="Parse the response">
+    Every successful response follows the standard envelope format described below. Read the `data` field for the payload you requested and the `meta` field for timing and context information.
+  </Step>
+</Steps>
+
+## Response Envelope
+
+Every response from the SURCHI API — success or error — uses a consistent top-level envelope. This makes it easy to write generic response-handling logic across all endpoints.
+
+```json
+{
+  "success": true,
+  "data": { ... },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "network": "solana",
+    "latency_ms": 42
+  }
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `success` | boolean | `true` for successful responses, `false` for errors |
+| `data` | object | The requested payload. Shape varies by endpoint. |
+| `meta.timestamp` | string | ISO 8601 UTC timestamp of when the response was generated |
+| `meta.network` | string | The network the query was resolved against |
+| `meta.latency_ms` | integer | Server-side processing time in milliseconds |
+
+When `success` is `false`, the envelope contains an `error` object instead of `data`. See the [Errors](/developer/api/errors) reference for the full error format and code list.
+
+## Available Endpoints
+
+| Endpoint Group | Description |
+|----------------|-------------|
+| `/v1/tokens` | Token data, search, holders |
+| `/v1/wallets` | Wallet analytics, PnL, portfolio |
+| `/v1/contracts` | AI contract audits |
+| `/v1/liquidity` | Liquidity routing and pools |
+| `/v1/trending` | Trending tokens feed |
+| `/v1/alerts` | Alert management |
+| `/v1/networks` | Supported networks |
+
+## Pagination
+
+Endpoints that return lists use **cursor-based pagination**. This approach is stable under high-frequency data updates — unlike offset-based pagination, it won't return duplicates or skip records when new items are inserted between requests.
+
+Include the `limit` query parameter to control page size (default: `20`, maximum: `100`). When there are more results, the response `meta` object includes a `next_cursor` string. Pass that value as the `cursor` query parameter on your next request to fetch the following page. When `next_cursor` is absent or `null`, you have reached the last page.
+
+```json
+{
+  "success": true,
+  "data": [ ... ],
+  "meta": {
+    "next_cursor": "eyJpZCI6MTIzNH0",
+    "limit": 20,
+    "total": 84
+  }
+}
+```
+
+```bash
+# First page
+curl "https://api.surchi.xyz/v1/tokens/search?q=PEPE&network=ethereum&limit=20" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Next page using the cursor from the previous response
+curl "https://api.surchi.xyz/v1/tokens/search?q=PEPE&network=ethereum&limit=20&cursor=eyJpZCI6MTIzNH0" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Rate Limits
+
+Every API key is subject to per-minute rate limits based on your plan. When you exceed your limit, the API returns HTTP `429` with a `Retry-After` header indicating how many seconds to wait before retrying.
+
+| Plan | Requests per Minute |
+|------|---------------------|
+| Free | 10 |
+| Standard | 60 |
+| Pro | 300 |
+| Elite | 1,000 |
+
+The following headers are included on every response so you can monitor your consumption in real time:
+
+| Header | Description |
+|--------|-------------|
+| `X-RateLimit-Limit` | Maximum requests allowed per minute for your plan |
+| `X-RateLimit-Remaining` | Requests remaining in the current window |
+| `X-RateLimit-Reset` | Unix timestamp when the current window resets |
+
+For retry logic and rate limit handling patterns, see the [Errors](/developer/api/errors) reference. For details on plan-level security and infrastructure, see the [Security](/technology/security) page.
+
+<Note>
+  **API versioning:** The current version, `v1`, is stable. SURCHI will never introduce breaking changes within `v1`. When incompatible changes are required, they will be released under a new version prefix (e.g. `/v2/`), and `v1` will continue to be supported with advance deprecation notice.
+</Note>

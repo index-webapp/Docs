@@ -1,0 +1,200 @@
+---
+title: "Wallet Intelligence: Track PnL, Portfolio, and On-Chain Activity"
+sidebarTitle: "Wallet Intelligence"
+description: "Analyze any wallet's profit and loss, token portfolio, NFT holdings, trading history, and on-chain behavior. Track whales and smart money wallets on SURCHI."
+---
+
+SURCHI's Wallet Intelligence turns any on-chain address into a comprehensive investor profile. Whether you're evaluating a whale's track record, auditing your own trading performance, or shadowing a smart money wallet that consistently beats the market, Wallet Intelligence surfaces PnL, portfolio composition, transaction history, NFT holdings, and behavioral patterns — all in one place, across multiple chains.
+
+## Wallet Overview
+
+When you look up any wallet address on SURCHI, the overview panel gives you an immediate snapshot of the account's identity and activity:
+
+- **Address** — the full wallet address with a one-click copy button and a link to the relevant block explorer
+- **Chain** — the network(s) on which the wallet has activity (Solana, Ethereum, Base, and more)
+- **First Activity** — the date and transaction of the wallet's very first on-chain interaction
+- **Last Activity** — the most recent transaction timestamp, indicating how active the wallet currently is
+- **Net Worth** — the estimated total USD value of all token balances, NFTs, and liquidity positions held by the wallet at the current moment
+- **Wallet Tags** — any labels SURCHI has assigned based on behavioral analysis (e.g., Whale, Smart Money, Exchange)
+
+The overview is updated in real time as new transactions land on-chain, so you're always looking at the wallet's current state rather than a stale cached view.
+
+## PnL Dashboard
+
+The PnL Dashboard breaks down a wallet's profitability into three distinct views, each accessible as its own tab:
+
+<Tabs>
+  <Tab title="Realized Gains">
+    **Realized PnL** measures profit and loss on positions that have already been closed — tokens that were bought and subsequently sold. This is the most concrete measure of a trader's actual performance because the money has changed hands.
+
+    **Formula:**
+    ```
+    Realized PnL = Σ (Sell Price − Avg Buy Price) × Quantity Sold
+    ```
+
+    **Example:**
+    ```
+    Token:         BONK
+    Avg Buy Price: $0.000012
+    Sell Price:    $0.000031
+    Quantity Sold: 5,000,000
+
+    Realized PnL = ($0.000031 − $0.000012) × 5,000,000
+                 = $0.000019 × 5,000,000
+                 = +$95.00
+    ```
+
+    Realized gains are displayed in both USD and as a percentage return on the original cost basis. All historical realized PnL figures are aggregated into a cumulative total you can filter by time period (7d, 30d, 90d, all-time).
+  </Tab>
+
+  <Tab title="Unrealized Gains">
+    **Unrealized PnL** measures the paper profit or loss on positions that are still open — tokens currently held in the wallet, valued at the live market price.
+
+    **Formula:**
+    ```
+    Unrealized PnL = Σ (Current Price − Avg Buy Price) × Quantity Held
+    ```
+
+    **Example:**
+    ```
+    Token:          WIF
+    Avg Buy Price:  $1.20
+    Current Price:  $2.85
+    Quantity Held:  500
+
+    Unrealized PnL = ($2.85 − $1.20) × 500
+                   = $1.65 × 500
+                   = +$825.00
+    ```
+
+    Unrealized PnL fluctuates as market prices change. SURCHI refreshes token prices every few seconds so the figure stays accurate. Note that unrealized gains are not locked in until the position is sold.
+  </Tab>
+
+  <Tab title="Overall PnL">
+    **Overall PnL** combines realized and unrealized figures into a single total performance metric for the wallet.
+
+    **Formula:**
+    ```
+    Overall PnL = Realized PnL + Unrealized PnL
+    ```
+
+    **Example:**
+    ```
+    Realized PnL:   +$95.00
+    Unrealized PnL: +$825.00
+
+    Overall PnL = $95.00 + $825.00
+               = +$920.00
+    ```
+
+    The Overall PnL tab also surfaces the wallet's **win rate** — the percentage of closed trades that were profitable — and the **average trade duration**, giving you a sense of whether this wallet trades short-term momentum or holds longer-term positions.
+  </Tab>
+</Tabs>
+
+## Portfolio & Token Balances
+
+The portfolio view lists every token held by the wallet with full cost-basis and performance data. SURCHI calculates the average buy price by tracing all historical acquisitions for each token held in the wallet.
+
+| Field          | Description                                                   |
+|----------------|---------------------------------------------------------------|
+| Token          | Token name and symbol, with a link to the token's SURCHI page |
+| Balance        | Current quantity held in the wallet                           |
+| Value (USD)    | Current USD value based on live market price                  |
+| Avg Buy Price  | Average cost basis across all historical purchases            |
+| Current Price  | Live market price, refreshed every few seconds                |
+| PnL %          | Percentage gain or loss relative to the average buy price     |
+
+You can sort the portfolio table by any column and filter by chain to focus on a specific network's holdings. Spam tokens and known zero-value assets are automatically hidden by default but can be revealed with the **Show All** toggle.
+
+## Trading History
+
+The trading history feed shows every swap, buy, sell, and transfer the wallet has executed, in reverse chronological order. Each entry includes the token pair, the amount, the DEX used, the USD value at execution time, and a link to the transaction on the block explorer.
+
+You can filter the trading history by:
+
+- **Transaction type** — Buy, Sell, Swap, Transfer, or LP add/remove
+- **Date range** — preset ranges (today, 7d, 30d, 90d) or a custom date picker
+- **Chain** — filter to a specific network if the wallet is active across multiple chains
+- **Token** — search for transactions involving a specific token or contract address
+- **Minimum size** — hide small transactions below a USD threshold to focus on significant moves
+
+The feed updates in near real time, so large wallet activity appears within seconds of the transaction confirming on-chain.
+
+## NFT Holdings
+
+The NFT tab gives you a visual gallery of all NFT collections held in the wallet, including collection name, individual asset thumbnails, floor price (where available), and estimated total NFT portfolio value. For Solana wallets, SURCHI pulls data from major Solana NFT marketplaces to display live floor prices. You can also see the wallet's full NFT transaction history — mints, purchases, sales, and transfers — alongside the realized PnL on any NFTs that have been sold.
+
+## Wallet Tags & Labels
+
+SURCHI automatically tags wallets based on on-chain behavioral patterns, transaction volume, and cross-reference against known address databases. Tags give you an instant shorthand for understanding who you're looking at.
+
+<CardGroup cols={3}>
+  <Card title="🐋 Whale" icon="whale" color="#6366f1">
+    Wallets holding or trading very large positions — typically in the top percentile by USD volume or token concentration. Whale movements often precede significant price action.
+  </Card>
+  <Card title="🧠 Smart Money" icon="brain" color="#8b5cf6">
+    Wallets with a consistently high win rate and above-average returns across multiple tokens and time periods. Smart Money wallets are identified purely by on-chain performance, not social signals.
+  </Card>
+  <Card title="🔍 Insider" icon="magnifying-glass" color="#f59e0b">
+    Wallets that have shown a pattern of buying tokens shortly before major announcements or price pumps, suggesting access to non-public information or early project involvement.
+  </Card>
+  <Card title="🏦 Exchange" icon="building-columns" color="#14b8a6">
+    Known centralized exchange hot wallets and cold wallets. Identifying exchange wallets prevents you from mistaking large institutional inflows or outflows for organic trader behavior.
+  </Card>
+  <Card title="💧 DEX LP Provider" icon="droplet" color="#3b82f6">
+    Wallets that are primarily or frequently providing liquidity to decentralized exchange pools. These wallets' token movements often reflect LP management rather than directional trading bets.
+  </Card>
+  <Card title="🤖 Bot / Sniper" icon="robot" color="#ef4444">
+    Wallets displaying automated trading patterns — extremely rapid buy/sell cycles, consistent first-block entries on new tokens, or activity signatures consistent with MEV bots and sniper scripts.
+  </Card>
+</CardGroup>
+
+## Whale Tracking
+
+Once you've identified a whale wallet worth following, SURCHI makes it easy to monitor their every move. You can add any wallet to your **Tracked Wallets** list with a single click, and SURCHI will surface that wallet's new transactions in your personal activity feed in near real time.
+
+For high-conviction whale wallets, you can set **movement alerts** that notify you the moment the wallet executes a transaction above a threshold you define. This lets you react to large whale buys or sells within seconds of them happening on-chain, rather than discovering them after the price has already moved.
+
+You can track an unlimited number of wallets, and tracked wallets are visible across all your devices when you're logged in to your SURCHI account.
+
+## Smart Money
+
+The **Smart Money** filter surfaces wallets that have demonstrated consistently profitable trading over a meaningful sample size of trades. To qualify as Smart Money on SURCHI, a wallet must meet all of the following criteria:
+
+- **Win rate above 60%** across all closed positions in the last 90 days
+- **Minimum of 20 closed trades** to ensure statistical significance
+- **Positive overall PnL** in USD terms (not just percentage, to exclude tiny-position luck)
+- **No known bot or sniper signatures** — Smart Money must reflect genuine human trading judgment
+
+When you view a Smart Money wallet, you can see exactly which tokens they're currently holding, what their historical best and worst trades were, and what sectors or narratives they tend to focus on. Copying Smart Money wallets is a popular strategy, but always combine it with your own research before entering any position.
+
+## Wallet Alerts
+
+Set up real-time alerts on any wallet so you never miss a significant move:
+
+<Steps>
+  <Step title="Look up a wallet address">
+    Enter the wallet address you want to track into the SURCHI search bar. Navigate to the wallet's profile page to confirm you have the right address.
+  </Step>
+  <Step title="Click Track Wallet">
+    Click the **Track Wallet** button in the top-right area of the wallet profile. This adds the wallet to your tracked list immediately and begins monitoring for new activity.
+  </Step>
+  <Step title="Configure alert conditions">
+    In the alert configuration panel, choose which events should trigger a notification. Available conditions include:
+    - **Large buy** — any purchase above a USD threshold you set
+    - **Large sell** — any sale above a USD threshold you set
+    - **New token** — wallet buys a token it has never held before
+    - **Wallet transfer** — large inbound or outbound transfer
+    - **Any transaction** — notify on every on-chain event (best for high-priority wallets only)
+  </Step>
+  <Step title="Choose your notification method">
+    Select how you want to receive alerts:
+    - **Email** — delivered to your registered SURCHI account email
+    - **Telegram** — via the SURCHI Telegram bot (link your account in Settings)
+    - **Webhook** — POST a JSON payload to any URL you specify, for custom integrations
+  </Step>
+</Steps>
+
+<Note>
+  Connect your own wallet in **Settings → Connected Wallets** to unlock a personalized Wallet Intelligence view. When your wallet is connected, SURCHI automatically populates your PnL dashboard, portfolio, and trading history with your own data — giving you the same deep analytics for yourself that you can see for any other wallet on the platform.
+</Note>

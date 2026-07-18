@@ -1,0 +1,275 @@
+---
+title: "Liquidity API: Pool Data and Swap Routing Endpoints"
+sidebarTitle: "Liquidity"
+description: "REST API endpoints for DEX liquidity data, pool lookup, and smart swap routing across Raydium, Orca, Jupiter, Uniswap, and PancakeSwap."
+---
+
+The Liquidity API provides real-time access to DEX pool data and intelligent swap routing across all SURCHI-supported networks. You can look up every liquidity pool for a given token, get the optimal route for a swap across multiple DEXes simultaneously, and query detailed data for a specific trading pair. All liquidity endpoints require the `read:liquidity` scope on your API key.
+
+---
+
+## GET /v1/liquidity/pools
+
+Retrieve all known liquidity pools for a token, optionally filtered by DEX. Results include pool address, paired token, total value locked, and 24-hour volume.
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `token` | string | Yes | Token contract address to look up pools for |
+| `network` | string | Yes | Network identifier: `ethereum`, `bnb`, `solana`, `polygon`, `base`, `avalanche`, or `arbitrum` |
+| `dex` | string | No | Filter by DEX name: `raydium`, `orca`, `jupiter`, `uniswap`, `pancakeswap`. Omit for all DEXes. |
+| `limit` | integer | No | Results per page. Default: `20`, max: `100` |
+| `cursor` | string | No | Pagination cursor from a previous response |
+
+### Example Request
+
+<CodeGroup>
+  ```bash cURL
+  curl -X GET "https://api.surchi.xyz/v1/liquidity/pools?token=So11111111111111111111111111111111111111112&network=solana" \
+    -H "Authorization: Bearer YOUR_API_KEY"
+  ```
+
+  ```javascript JavaScript
+  const params = new URLSearchParams({
+    token: 'So11111111111111111111111111111111111111112',
+    network: 'solana'
+  });
+
+  const response = await fetch(
+    `https://api.surchi.xyz/v1/liquidity/pools?${params}`,
+    {
+      headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+    }
+  );
+  const { data } = await response.json();
+  // data is an array of pool objects
+  ```
+</CodeGroup>
+
+### Example Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "pool_address": "58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWaD7o2qoHBRj",
+      "dex": "Raydium",
+      "network": "solana",
+      "token_a": {
+        "address": "So11111111111111111111111111111111111111112",
+        "symbol": "SOL"
+      },
+      "token_b": {
+        "address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "symbol": "USDC"
+      },
+      "tvl_usd": 48200000,
+      "volume_24h_usd": 120000000,
+      "fee_pct": 0.25,
+      "created_at": "2021-10-08T00:00:00Z"
+    },
+    {
+      "pool_address": "HJPjoWUrhoZzkNfRpHuieeFk9WcZWjwy6PBjZ81ngndJ",
+      "dex": "Orca",
+      "network": "solana",
+      "token_a": {
+        "address": "So11111111111111111111111111111111111111112",
+        "symbol": "SOL"
+      },
+      "token_b": {
+        "address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "symbol": "USDC"
+      },
+      "tvl_usd": 32100000,
+      "volume_24h_usd": 85000000,
+      "fee_pct": 0.30,
+      "created_at": "2021-12-15T00:00:00Z"
+    }
+  ],
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "next_cursor": null,
+    "limit": 20,
+    "total": 7
+  }
+}
+```
+
+---
+
+## GET /v1/liquidity/route
+
+Find the optimal swap route for a given input/output token pair and amount. SURCHI queries all supported DEXes simultaneously and returns the best route ranked by output amount, alongside alternative routes for comparison.
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `input_token` | string | Yes | Contract address or symbol of the token you are selling |
+| `output_token` | string | Yes | Contract address or symbol of the token you are buying |
+| `amount` | number | Yes | Amount of `input_token` to swap |
+| `network` | string | Yes | Network identifier |
+| `slippage` | number | No | Maximum acceptable slippage percentage. Default: `0.5` |
+
+### Example Request
+
+<CodeGroup>
+  ```bash cURL
+  curl -X GET "https://api.surchi.xyz/v1/liquidity/route?input_token=SOL&output_token=USDC&amount=1.0&network=solana&slippage=0.5" \
+    -H "Authorization: Bearer YOUR_API_KEY"
+  ```
+
+  ```javascript JavaScript
+  const params = new URLSearchParams({
+    input_token: 'SOL',
+    output_token: 'USDC',
+    amount: '1.0',
+    network: 'solana',
+    slippage: '0.5'
+  });
+
+  const response = await fetch(
+    `https://api.surchi.xyz/v1/liquidity/route?${params}`,
+    {
+      headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+    }
+  );
+  const data = await response.json();
+  const bestRoute = data.data.best_route;
+  console.log(`Best route via ${bestRoute.dex}: ${bestRoute.output_amount} USDC`);
+  ```
+</CodeGroup>
+
+### Example Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "input_token": "SOL",
+    "output_token": "USDC",
+    "input_amount": 1.0,
+    "best_route": {
+      "dex": "Jupiter",
+      "path": ["SOL", "USDC"],
+      "output_amount": 185.42,
+      "price_impact_pct": 0.05,
+      "fee_pct": 0.25
+    },
+    "alternative_routes": [
+      {
+        "dex": "Raydium",
+        "output_amount": 185.18,
+        "price_impact_pct": 0.08,
+        "fee_pct": 0.25
+      },
+      {
+        "dex": "Orca",
+        "output_amount": 185.30,
+        "price_impact_pct": 0.06,
+        "fee_pct": 0.30
+      }
+    ]
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "network": "solana",
+    "latency_ms": 47
+  }
+}
+```
+
+### Route Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `input_token` | string | Symbol or address of the token being sold |
+| `output_token` | string | Symbol or address of the token being received |
+| `input_amount` | number | Amount of `input_token` provided |
+| `best_route.dex` | string | Name of the DEX offering the best output |
+| `best_route.path` | array | Ordered list of tokens in the swap route (may include intermediary hops) |
+| `best_route.output_amount` | number | Expected amount of `output_token` received |
+| `best_route.price_impact_pct` | number | Estimated price impact as a percentage |
+| `best_route.fee_pct` | number | DEX trading fee as a percentage |
+| `alternative_routes` | array | Other viable routes ranked by output amount descending |
+
+<Tip>
+  Route quotes reflect pool prices at the moment of the request and are not guaranteed. For large amounts, check `price_impact_pct` carefully — anything above 1% may indicate insufficient liquidity on that route.
+</Tip>
+
+---
+
+## GET /v1/liquidity/{pair}
+
+Retrieve detailed data for a specific trading pair, identified by its pool address. This is the most granular pool-level endpoint, returning reserve balances, price history, and fee tier information.
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `pair` | string | Yes (path) | The pool or pair address |
+| `network` | string | Yes (query) | Network identifier |
+
+### Example Request
+
+<CodeGroup>
+  ```bash cURL
+  curl -X GET "https://api.surchi.xyz/v1/liquidity/58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWaD7o2qoHBRj?network=solana" \
+    -H "Authorization: Bearer YOUR_API_KEY"
+  ```
+
+  ```javascript JavaScript
+  const pairAddress = '58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWaD7o2qoHBRj';
+
+  const response = await fetch(
+    `https://api.surchi.xyz/v1/liquidity/${pairAddress}?network=solana`,
+    {
+      headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+    }
+  );
+  const data = await response.json();
+  ```
+</CodeGroup>
+
+### Example Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "pool_address": "58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWaD7o2qoHBRj",
+    "dex": "Raydium",
+    "network": "solana",
+    "token_a": {
+      "address": "So11111111111111111111111111111111111111112",
+      "symbol": "SOL",
+      "reserve": 130012.55,
+      "reserve_usd": 24100126.71
+    },
+    "token_b": {
+      "address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "symbol": "USDC",
+      "reserve": 24100000.00,
+      "reserve_usd": 24100000.00
+    },
+    "price_a_in_b": 185.37,
+    "price_b_in_a": 0.005395,
+    "tvl_usd": 48200126.71,
+    "volume_24h_usd": 120000000,
+    "fee_pct": 0.25,
+    "apy_pct": 18.4,
+    "created_at": "2021-10-08T00:00:00Z"
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "network": "solana",
+    "latency_ms": 41
+  }
+}
+```
+
+<Note>
+  The `apy_pct` field is an annualised yield estimate for liquidity providers in this pool, calculated from the trailing 7-day fee revenue relative to total value locked. It does not account for impermanent loss.
+</Note>

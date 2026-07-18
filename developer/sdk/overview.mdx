@@ -1,0 +1,121 @@
+---
+title: "SURCHI SDK: Build Blockchain Analytics Into Your App"
+sidebarTitle: "SDK Overview"
+description: "The SURCHI SDK provides type-safe clients for JavaScript, TypeScript, and Python to query tokens, wallets, contracts, and liquidity routing from your application."
+---
+
+The SURCHI SDK gives you programmatic access to the full SURCHI analytics platform directly from your application code. Whether you're building a trading dashboard, a wallet tracker, or an automated risk monitor, the SDK handles authentication, serialization, pagination, and error handling so you can focus on your product logic rather than raw HTTP calls.
+
+## Available SDKs
+
+| Language | Package | Install |
+|----------|---------|---------|
+| JavaScript / TypeScript | `@surchi/sdk` | `npm install @surchi/sdk` |
+| Python | `surchi-sdk` | `pip install surchi-sdk` |
+
+## Quick Install
+
+<CodeGroup>
+
+```bash npm
+npm install @surchi/sdk
+```
+
+```bash yarn
+yarn add @surchi/sdk
+```
+
+```bash pnpm
+pnpm add @surchi/sdk
+```
+
+```bash pip
+pip install surchi-sdk
+```
+
+</CodeGroup>
+
+## Initialization
+
+Both clients read your API key from an environment variable. Never hardcode your key directly in source code.
+
+<Tabs>
+  <Tab title="JavaScript / TypeScript">
+    ```javascript
+    import { Surchi } from '@surchi/sdk';
+
+    const surchi = new Surchi({
+      apiKey: process.env.SURCHI_API_KEY
+    });
+    ```
+  </Tab>
+  <Tab title="Python">
+    ```python
+    import os
+    from surchi import Surchi
+
+    client = Surchi(api_key=os.environ['SURCHI_API_KEY'])
+    ```
+  </Tab>
+</Tabs>
+
+<Note>
+  The JavaScript SDK ships with full TypeScript type definitions bundled in the package — no need to install a separate `@types/surchi` package. You get complete autocompletion and type safety out of the box.
+</Note>
+
+## Available Modules
+
+Every client instance exposes four top-level modules. Click through to the relevant SDK guide for complete method signatures and examples.
+
+<CardGroup cols={2}>
+  <Card title="Tokens" icon="coin" href="/developer/sdk/javascript#tokens-module">
+    Query token metadata, real-time prices, market cap, risk scores, and holder distributions across all supported networks.
+  </Card>
+  <Card title="Wallets" icon="wallet" href="/developer/sdk/javascript#wallets-module">
+    Analyze wallet behavior, calculate realized and unrealized PnL, inspect portfolio holdings, and track trading history.
+  </Card>
+  <Card title="Contracts" icon="file-code" href="/developer/sdk/javascript#contracts-module">
+    Run AI-powered smart contract audits that detect honeypots, rug-pull vectors, ownership risks, and hidden mint authorities.
+  </Card>
+  <Card title="Liquidity" icon="arrow-right-arrow-left" href="/developer/sdk/javascript#liquidity-module">
+    Discover optimal swap routes, compare DEX prices, and calculate expected output amounts with configurable slippage tolerance.
+  </Card>
+</CardGroup>
+
+## Error Handling
+
+The SDK surfaces distinct error classes so you can handle rate limits, missing resources, and general API errors separately.
+
+<Tabs>
+  <Tab title="JavaScript / TypeScript">
+    ```typescript
+    import { SurchiError, RateLimitError, NotFoundError } from '@surchi/sdk';
+
+    try {
+      const token = await surchi.tokens.get(address, { network: 'solana' });
+    } catch (err) {
+      if (err instanceof RateLimitError) {
+        console.log(`Rate limited. Retry after ${err.retryAfter}s`);
+      } else if (err instanceof NotFoundError) {
+        console.log('Token not found on this network');
+      } else if (err instanceof SurchiError) {
+        console.log(`API error: ${err.message} (${err.code})`);
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Python">
+    ```python
+    from surchi.exceptions import SurchiError, RateLimitError, NotFoundError
+
+    try:
+        token = client.tokens.get(address, network=network)
+    except RateLimitError as e:
+        print(f"Rate limited. Retry after {e.retry_after}s")
+    except NotFoundError:
+        print("Token not found on this network")
+    except SurchiError as e:
+        print(f"API error: {e.message} ({e.code})")
+    ```
+  </Tab>
+</Tabs>

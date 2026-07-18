@@ -1,0 +1,293 @@
+---
+title: "SURCHI Webhook Events: Complete Event Type Reference"
+sidebarTitle: "Events"
+description: "Complete reference for all SURCHI webhook event types including token alerts, wallet movements, contract risk changes, new listings, and platform events."
+---
+
+Every event SURCHI delivers to your webhook endpoint has a `type` field that identifies exactly what happened on-chain. This page documents all available event types, their payload schemas, and how to subscribe to them. Use this reference alongside the [Webhooks Overview](/developer/webhooks/overview) to build a robust, event-driven integration.
+
+## All Event Types
+
+| Event Type | Description |
+|------------|-------------|
+| `token.price_alert` | Token price crossed a configured threshold |
+| `token.new_listing` | New token pool detected on a DEX |
+| `token.risk_change` | AI audit risk score changed significantly |
+| `wallet.large_trade` | Tracked wallet made a large buy or sell |
+| `wallet.new_position` | Tracked wallet opened a new token position |
+| `wallet.pnl_milestone` | Wallet PnL crossed a configured milestone |
+| `contract.honeypot_detected` | Contract flagged as honeypot |
+| `contract.liquidity_removed` | Significant liquidity removed from a pool |
+| `contract.ownership_changed` | Contract ownership transferred |
+| `pump.graduation` | Pump.fun token graduated to Raydium |
+
+## Event Payload Examples
+
+Each accordion below shows the complete JSON body delivered to your endpoint for that event type.
+
+<AccordionGroup>
+  <Accordion title="token.price_alert">
+    Fired when a token's price crosses a threshold you configured. The `alert_type` field is either `price_above` or `price_below`.
+
+    ```json
+    {
+      "id": "evt_01HXtoken001",
+      "type": "token.price_alert",
+      "created_at": "2024-01-15T10:30:00Z",
+      "data": {
+        "token_address": "So11111111111111111111111111111111111111112",
+        "network": "solana",
+        "symbol": "WSOL",
+        "alert_type": "price_above",
+        "threshold_usd": 200.00,
+        "current_price_usd": 201.50,
+        "change_pct_24h": 5.2
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="token.new_listing">
+    Fired when SURCHI detects a new liquidity pool for a previously unseen token on a supported DEX. This event fires within seconds of pool creation.
+
+    ```json
+    {
+      "id": "evt_01HXtoken002",
+      "type": "token.new_listing",
+      "created_at": "2024-01-15T10:31:00Z",
+      "data": {
+        "token_address": "NewTokenAddress",
+        "network": "solana",
+        "symbol": "NEW",
+        "name": "New Token",
+        "dex": "raydium",
+        "pool_address": "PoolAddress",
+        "initial_liquidity_usd": 15000.00,
+        "listing_tx": "ListingTxHash"
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="token.risk_change">
+    Fired when the SURCHI AI audit engine re-evaluates a token contract and its risk score moves by more than the configured sensitivity threshold.
+
+    ```json
+    {
+      "id": "evt_01HXtoken003",
+      "type": "token.risk_change",
+      "created_at": "2024-01-15T10:32:00Z",
+      "data": {
+        "token_address": "TokenAddress",
+        "network": "solana",
+        "symbol": "TKN",
+        "previous_risk_score": 22,
+        "current_risk_score": 74,
+        "risk_level": "high",
+        "triggered_checks": ["mint_authority_active", "large_holder_concentration"],
+        "ai_summary": "Mint authority was re-enabled following a contract upgrade. Top 3 holders now control 68% of supply."
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="wallet.large_trade">
+    Fired when a wallet you are tracking executes a trade above the dollar threshold you configured during webhook setup.
+
+    ```json
+    {
+      "id": "evt_01HXwallet001",
+      "type": "wallet.large_trade",
+      "created_at": "2024-01-15T10:30:00Z",
+      "data": {
+        "wallet_address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+        "network": "solana",
+        "trade_type": "buy",
+        "token_address": "TokenAddress",
+        "token_symbol": "SURCHI",
+        "amount_usd": 25000.00,
+        "tx_hash": "5KtXxxx..."
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="wallet.new_position">
+    Fired when a tracked wallet buys a token it has not held before, indicating a new position has been opened.
+
+    ```json
+    {
+      "id": "evt_01HXwallet002",
+      "type": "wallet.new_position",
+      "created_at": "2024-01-15T10:33:00Z",
+      "data": {
+        "wallet_address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+        "network": "solana",
+        "token_address": "NewPositionTokenAddress",
+        "token_symbol": "XYZ",
+        "entry_price_usd": 0.0042,
+        "amount_usd": 3200.00,
+        "tx_hash": "EntryTxHash"
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="wallet.pnl_milestone">
+    Fired when a tracked wallet's cumulative realized PnL crosses a positive or negative milestone you defined.
+
+    ```json
+    {
+      "id": "evt_01HXwallet003",
+      "type": "wallet.pnl_milestone",
+      "created_at": "2024-01-15T10:34:00Z",
+      "data": {
+        "wallet_address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+        "network": "solana",
+        "milestone_usd": 100000.00,
+        "realized_pnl_usd": 101250.50,
+        "roi_pct": 312.4,
+        "timeframe": "all_time"
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="contract.honeypot_detected">
+    Fired when the SURCHI AI audit engine identifies a contract as a honeypot — meaning buyers cannot sell their tokens.
+
+    ```json
+    {
+      "id": "evt_01HXcontract001",
+      "type": "contract.honeypot_detected",
+      "created_at": "2024-01-15T10:35:00Z",
+      "data": {
+        "contract_address": "HoneypotContractAddress",
+        "network": "ethereum",
+        "symbol": "TRAP",
+        "risk_score": 96,
+        "honeypot_type": "sell_disabled",
+        "liquidity_usd": 42000.00,
+        "holder_count": 318,
+        "ai_summary": "The transfer function reverts for all non-owner addresses when attempting to sell. Classified as a classic sell-disabled honeypot."
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="contract.liquidity_removed">
+    Fired when a significant percentage of liquidity is removed from a token's pool, which may indicate a rug pull.
+
+    ```json
+    {
+      "id": "evt_01HXcontract002",
+      "type": "contract.liquidity_removed",
+      "created_at": "2024-01-15T10:36:00Z",
+      "data": {
+        "contract_address": "TokenContractAddress",
+        "network": "solana",
+        "symbol": "RUG",
+        "pool_address": "PoolAddress",
+        "liquidity_removed_usd": 180000.00,
+        "liquidity_removed_pct": 94.2,
+        "remaining_liquidity_usd": 10800.00,
+        "tx_hash": "RemovalTxHash"
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="contract.ownership_changed">
+    Fired when a contract's owner or admin authority is transferred to a new address.
+
+    ```json
+    {
+      "id": "evt_01HXcontract003",
+      "type": "contract.ownership_changed",
+      "created_at": "2024-01-15T10:37:00Z",
+      "data": {
+        "contract_address": "TokenContractAddress",
+        "network": "ethereum",
+        "symbol": "TKN",
+        "previous_owner": "0xOldOwnerAddress",
+        "new_owner": "0xNewOwnerAddress",
+        "tx_hash": "OwnershipTxHash"
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="pump.graduation">
+    Fired when a Pump.fun token completes its bonding curve and migrates to a Raydium liquidity pool. This event signals that the token has reached the graduation threshold of approximately 85 SOL raised.
+
+    ```json
+    {
+      "id": "evt_01HXpump001",
+      "type": "pump.graduation",
+      "created_at": "2024-01-15T10:30:00Z",
+      "data": {
+        "token_address": "PumpTokenAddress",
+        "symbol": "MEME",
+        "name": "MemeCoin",
+        "bonding_curve_completed": true,
+        "sol_raised": 85.0,
+        "raydium_pool": "RaydiumPoolAddress",
+        "migration_tx": "MigrationTxHash"
+      }
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Subscribing to Events
+
+Pass an array of event type strings when creating or updating a webhook. To subscribe to all current and future event types, use the `*` wildcard.
+
+```bash
+# Subscribe to specific events
+curl -X POST https://api.surchi.xyz/v1/webhooks \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://yourapp.com/webhooks/surchi",
+    "events": ["token.price_alert", "wallet.large_trade", "pump.graduation"],
+    "secret": "your_webhook_secret"
+  }'
+
+# Subscribe to all events using the wildcard
+curl -X POST https://api.surchi.xyz/v1/webhooks \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://yourapp.com/webhooks/surchi",
+    "events": ["*"],
+    "secret": "your_webhook_secret"
+  }'
+```
+
+<Note>
+  Using the `*` wildcard means your endpoint will automatically receive any new event types SURCHI introduces in the future. If you prefer explicit control over which events your endpoint receives, list them individually.
+</Note>
+
+## Event Deduplication
+
+Under certain conditions — network timeouts, retries, or infrastructure failover — SURCHI may deliver the same event to your endpoint more than once. To handle this safely, treat every event as potentially duplicated and use the top-level `id` field as an idempotency key.
+
+Before processing an event, check whether you have already stored or acted on that `id`. If it already exists in your records, acknowledge the webhook with a `200` response and skip processing. A simple implementation uses a database unique constraint or a Redis `SET NX` operation on the event `id`.
+
+```typescript
+// Example idempotency check (TypeScript / Node.js)
+app.post('/webhooks/surchi', express.raw({ type: 'application/json' }), async (req, res) => {
+  // Signature verification omitted for brevity — always verify first
+  const event = JSON.parse(req.body);
+
+  const alreadyProcessed = await db.events.exists({ id: event.id });
+  if (alreadyProcessed) {
+    return res.status(200).send('Already processed');
+  }
+
+  await db.events.insert({ id: event.id, processed_at: new Date() });
+  await queue.push(event); // hand off to background worker
+  res.status(200).send('OK');
+});
+```

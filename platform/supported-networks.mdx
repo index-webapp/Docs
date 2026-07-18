@@ -1,0 +1,205 @@
+---
+title: "Supported Blockchain Networks on SURCHI"
+sidebarTitle: "Networks"
+description: "SURCHI supports real-time analytics across Ethereum, Solana, BNB Chain, Polygon, Base, Avalanche, and Arbitrum, with more chains coming soon."
+---
+
+SURCHI provides real-time on-chain analytics across seven major blockchain networks, with new chains added regularly. Each supported network is fully indexed — meaning SURCHI tracks every token, swap, liquidity event, and wallet interaction from genesis to the present — and all seven chains are queryable from the same search interface without any manual network switching. The sections below describe each network's technical details and the specific SURCHI features available for it.
+
+## Networks at a Glance
+
+| Network | Chain ID | Native Token | Avg Block Time | Status |
+|---|---|---|---|---|
+| Ethereum | 1 | ETH | ~12 seconds | Live |
+| BNB Chain | 56 | BNB | ~3 seconds | Live |
+| Solana | — (cluster) | SOL | ~400 milliseconds | Live |
+| Polygon | 137 | MATIC / POL | ~2 seconds | Live |
+| Base | 8453 | ETH | ~2 seconds | Live |
+| Avalanche (C-Chain) | 43114 | AVAX | ~1–2 seconds | Live |
+| Arbitrum One | 42161 | ETH | ~250 milliseconds | Live |
+
+---
+
+## Currently Supported Networks
+
+### Ethereum
+
+| Property | Value |
+|---|---|
+| Chain ID | 1 |
+| Native Token | ETH |
+| Consensus | Proof of Stake (Gasper) |
+| Avg Block Time | ~12 seconds |
+
+**Indexed DEXes:** Uniswap V2, Uniswap V3, SushiSwap, Curve Finance
+
+Ethereum is the largest smart contract ecosystem by total value locked and remains the primary home for blue-chip DeFi protocols and ERC-20 tokens. SURCHI indexes every ERC-20 token deployment, Uniswap factory pair creation, and swap event on Ethereum mainnet, giving you comprehensive coverage of both established projects and newly launched tokens.
+
+**SURCHI features for Ethereum:**
+- Full ERC-20 token analytics including verified contract source display
+- Uniswap V2 and V3 pool detection with concentrated liquidity range visualization
+- EIP-1967 and transparent proxy detection with automatic implementation linking
+- Gas price tracking displayed alongside transaction data
+- ENS (Ethereum Name Service) resolution — wallet addresses with ENS names are displayed with their human-readable `.eth` handle
+
+---
+
+### BNB Chain
+
+| Property | Value |
+|---|---|
+| Chain ID | 56 |
+| Native Token | BNB |
+| Consensus | Proof of Staked Authority (PoSA) |
+| Avg Block Time | ~3 seconds |
+
+**Indexed DEXes:** PancakeSwap V2, PancakeSwap V3, BiSwap
+
+BNB Chain (formerly Binance Smart Chain) hosts one of the highest daily transaction volumes of any EVM-compatible network, driven by PancakeSwap and a large base of retail DeFi activity. SURCHI's fast indexing pipeline handles BNB Chain's high throughput without data gaps, keeping token and pair data current even during peak network activity.
+
+**SURCHI features for BNB Chain:**
+- PancakeSwap V2 and V3 pair discovery and analytics
+- BEP-20 token metadata and holder tracking
+- Tax contract detection — particularly important on BNB Chain, where high-tax and honeypot tokens are disproportionately common
+- BiSwap pool indexing alongside PancakeSwap for full liquidity aggregation
+- Real-time rug alert system tuned to BNB Chain's token launch patterns
+
+---
+
+### Solana
+
+| Property | Value |
+|---|---|
+| Chain ID | N/A (identified by cluster: mainnet-beta) |
+| Native Token | SOL |
+| Consensus | Proof of History + Proof of Stake (PoH + PoS) |
+| Avg Block Time | ~400 milliseconds |
+
+**Indexed DEXes:** Raydium AMM, Raydium CLMM, Orca Whirlpools, Jupiter aggregated routes, Pump.fun
+
+Solana's sub-second finality and low transaction fees make it one of the most active chains for token launches, memecoins, and high-frequency DeFi. SURCHI indexes Solana at the slot level, processing new blocks as they are confirmed by the validator network and resolving SPL token metadata, program interactions, and DEX swaps in near real time.
+
+**SURCHI features for Solana:**
+- SPL token analytics with mint authority and freeze authority status display
+- Raydium AMM and CLMM pool tracking with tick-level liquidity depth
+- Orca Whirlpool concentrated liquidity visualization
+- Jupiter route analysis — see which pools and intermediary tokens SURCHI's routing engine selects for optimal swaps
+- Pump.fun integration for real-time token launch tracking (see below)
+- Wallet profiling with SPL token history across all programs
+
+#### Pump.fun Integration
+
+SURCHI tracks every token launched on Pump.fun in real time. Pump.fun is a Solana-native launchpad that enables permissionless token creation using an automated bonding curve mechanism, making it one of the most active sources of new token issuance in crypto.
+
+SURCHI's Pump.fun integration covers the full token lifecycle:
+
+- **Launch detection** — New Pump.fun token creations are indexed within seconds of the on-chain event, appearing immediately in the SURCHI trending feed and search index.
+- **Bonding curve status** — SURCHI displays the current position of each token on its Pump.fun bonding curve, including the percentage of the curve filled and the USD value of SOL deposited.
+- **Graduation detection** — When a Pump.fun token reaches the end of its bonding curve and qualifies for migration, SURCHI detects the graduation event and updates the token's status in real time.
+- **Raydium migration tracking** — After graduation, SURCHI monitors the on-chain migration transaction that moves the token's liquidity from the Pump.fun bonding curve to a Raydium AMM pool, and automatically links the new pool to the existing token page so your analytics continue uninterrupted.
+- **Sniper and early buyer analysis** — SURCHI identifies wallets that purchased within the first few transactions of a Pump.fun launch, flagging potential coordinated sniper activity in the holder analysis view.
+
+---
+
+### Polygon
+
+| Property | Value |
+|---|---|
+| Chain ID | 137 |
+| Native Token | MATIC / POL |
+| Consensus | Proof of Stake |
+| Avg Block Time | ~2 seconds |
+
+**Indexed DEXes:** QuickSwap, Uniswap V3
+
+Polygon PoS is an EVM-compatible Layer 2 sidechain offering significantly lower gas costs than Ethereum mainnet while maintaining broad compatibility with EVM tooling and standards. SURCHI indexes Polygon's full transaction history and covers the two primary DEX ecosystems — QuickSwap (Polygon's native DEX) and Uniswap V3.
+
+**SURCHI features for Polygon:**
+- Full ERC-20/ERC-721 token analytics including bridged asset identification
+- QuickSwap V2 and V3 pair indexing
+- Uniswap V3 pool analytics with fee tier breakdown
+- Bridged token detection — SURCHI flags tokens that originated on Ethereum mainnet and were bridged via the Polygon PoS bridge
+- Low-latency indexing optimized for Polygon's ~2-second block cadence
+
+---
+
+### Base
+
+| Property | Value |
+|---|---|
+| Chain ID | 8453 |
+| Native Token | ETH |
+| Consensus | Optimistic Rollup (OP Stack L2) |
+| Avg Block Time | ~2 seconds |
+
+**Indexed DEXes:** Uniswap V3, Aerodrome Finance
+
+Base is an Ethereum Layer 2 network built on the OP Stack and incubated by Coinbase. It inherits Ethereum's security through its optimistic rollup architecture while offering substantially lower transaction costs. Base has seen rapid growth in DeFi activity, particularly through Aerodrome Finance, which became the dominant DEX on the network shortly after launch.
+
+**SURCHI features for Base:**
+- Aerodrome stable and volatile pool analytics
+- Uniswap V3 pool tracking with concentrated liquidity range charts
+- L2 transaction cost display in ETH and USD
+- Cross-chain token tracking — identify tokens that exist on both Ethereum mainnet and Base via the standard bridge
+- Base-native token launch monitoring with rapid indexing optimized for the network's active memecoin scene
+
+---
+
+### Avalanche
+
+| Property | Value |
+|---|---|
+| Chain ID | 43114 (C-Chain) |
+| Native Token | AVAX |
+| Consensus | Avalanche Consensus (Snowman) |
+| Avg Block Time | ~1–2 seconds |
+
+**Indexed DEXes:** Trader Joe V1, Trader Joe V2 (Liquidity Book), Pangolin
+
+SURCHI indexes the Avalanche C-Chain, which is the EVM-compatible execution environment within the Avalanche network and the home of its DeFi ecosystem. Trader Joe is the primary DEX, with its V2 Liquidity Book architecture offering a novel discrete bin liquidity model that SURCHI's analytics engine fully decodes and visualizes.
+
+**SURCHI features for Avalanche:**
+- Trader Joe V1 and V2 Liquidity Book pool analytics, including bin-level liquidity distribution charts
+- Pangolin pair indexing
+- AVAX price feed integrated into all USD valuations
+- Full ERC-20 token support for Avalanche C-Chain assets
+- Cross-chain asset identification for tokens bridged from Ethereum via Avalanche Bridge
+
+---
+
+### Arbitrum
+
+| Property | Value |
+|---|---|
+| Chain ID | 42161 |
+| Native Token | ETH |
+| Consensus | Optimistic Rollup (Arbitrum Nitro L2) |
+| Avg Block Time | ~250 milliseconds |
+
+**Indexed DEXes:** Uniswap V3, Camelot V2, Camelot V3
+
+Arbitrum One is one of the most widely used Ethereum Layer 2 networks, known for its sub-second transaction finality and deep DeFi liquidity. SURCHI indexes Arbitrum at its native ~250ms block cadence, making it one of the fastest-updating chains on the platform. Camelot DEX is Arbitrum's largest native exchange and is fully indexed alongside Uniswap V3.
+
+**SURCHI features for Arbitrum:**
+- Camelot V2 and V3 pool analytics, including Camelot's directional fee model
+- Uniswap V3 concentrated liquidity visualization
+- Near-real-time transaction indexing at Arbitrum's ~250ms block speed
+- L2 fee data displayed alongside transaction records
+- Arbitrum-native token launch tracking, including tokens deployed via the Arbitrum bridge from Ethereum
+
+---
+
+## Coming Soon
+
+SURCHI's engineering team is actively working on expanding chain coverage. The following networks are on the near-term integration roadmap:
+
+- **Optimism** — Ethereum L2 (OP Stack)
+- **zkSync Era** — ZK rollup by Matter Labs
+- **Mantle** — EVM-compatible L2 with data availability layer
+- **Sui** — Move-based L1 with parallel execution
+- **Aptos** — Move-based L1 by ex-Diem engineers
+- **TON** — The Open Network, home of Telegram-native DeFi
+
+<Info>
+  Want to request support for a blockchain not listed above? Head to [surchi.xyz](https://surchi.xyz) and submit a chain request through the community feedback portal. Chain requests that receive significant community upvotes are prioritized for the next integration sprint. You can also join the SURCHI community on Discord or Telegram to discuss upcoming chain support directly with the team.
+</Info>

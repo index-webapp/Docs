@@ -1,0 +1,164 @@
+---
+title: "AI Contract Audit: Detect Risks Before You Trade"
+sidebarTitle: "AI Audit"
+description: "SURCHI's AI Contract Audit analyzes smart contracts for honeypots, mint authority, liquidity risks, whale concentration, and scams. Get a full risk report in seconds."
+---
+
+SURCHI's AI Contract Audit gives you a deep-dive security analysis of any token's smart contract before you commit a single dollar. By combining static code analysis, on-chain data, and machine learning pattern recognition, the auditor surfaces honeypots, dangerous authority flags, rug-pull indicators, and concentration risks in seconds — so you can trade with eyes open instead of flying blind.
+
+## How to Run an Audit
+
+<Steps>
+  <Step title="Navigate to a token page or paste a contract address">
+    Search for any token by name, ticker, or contract address using the SURCHI search bar. You can also paste a raw contract address directly into the address bar on [surchi.xyz](https://surchi.xyz) to jump straight to the token's profile page.
+  </Step>
+  <Step title="Click the AI Audit tab">
+    On the token profile page, select the **AI Audit** tab in the navigation strip. SURCHI will immediately begin fetching on-chain data and running all audit checks in parallel. Most audits complete within 5–10 seconds.
+  </Step>
+  <Step title="Review the risk score and detailed findings">
+    Once the audit is complete, you'll see the overall risk score at the top, followed by a breakdown of every individual check. Each check is marked as passed, flagged, or a warning, with a brief explanation of what was found.
+  </Step>
+  <Step title="Download the PDF audit report if needed">
+    If you need a shareable or archivable copy of the findings — for your own records, a DAO vote, or due diligence — click **Export PDF** to download a fully formatted audit report containing all checks, scores, and the AI summary.
+  </Step>
+</Steps>
+
+## Risk Score
+
+Every contract receives a composite risk score from **0 to 100**, calculated by weighting the severity and number of issues found across all audit checks. A lower score means fewer and less severe issues; a higher score means you should proceed with serious caution or avoid the token entirely.
+
+| Score Range | Risk Level      | Recommended Action                      |
+|-------------|-----------------|------------------------------------------|
+| 0–20        | Low Risk        | Safe to proceed with caution             |
+| 21–50       | Moderate Risk   | Review flagged issues carefully          |
+| 51–75       | High Risk       | Avoid unless independently verified      |
+| 76–100      | Critical Risk   | Do not interact                          |
+
+The score is recomputed each time you load the audit tab, so it always reflects the latest on-chain state of the contract.
+
+## Audit Checks
+
+<AccordionGroup>
+  <Accordion title="Ownership Detection">
+    SURCHI checks whether the contract's ownership has been **renounced** or transferred to a burn address. A contract with an active owner can have its configuration changed at any time by that owner — including altering fees, pausing transfers, or draining funds. If ownership is still held by a known deployer wallet or a multi-sig you can't verify, the audit flags this for your review. Renounced ownership is generally considered a positive signal, though it doesn't eliminate all risks on its own.
+  </Accordion>
+
+  <Accordion title="Mint Authority">
+    On Solana and EVM-compatible chains, a **mint authority** gives an address the power to create new tokens at will. If mint authority is active, the total supply can be inflated infinitely, diluting your position to near-zero with no warning. SURCHI checks whether the mint authority has been disabled, set to a null address, or left active on a wallet. Active mint authority with no time-lock or DAO control is a major red flag.
+  </Accordion>
+
+  <Accordion title="Freeze Authority (Solana)">
+    Unique to the Solana SPL token standard, **freeze authority** allows the token's authority address to freeze individual token accounts — preventing the holder from selling or transferring their tokens. This is the on-chain equivalent of locking you out of your own wallet. SURCHI checks whether freeze authority exists on the mint and identifies who holds it. Legitimate projects almost universally revoke freeze authority; its presence is a strong warning sign.
+  </Accordion>
+
+  <Accordion title="Upgradeable Contracts">
+    Some contracts — particularly on EVM chains using proxy patterns like OpenZeppelin's Transparent or UUPS proxies — can have their underlying logic **replaced after deployment**. This means a contract that looks safe today could silently become malicious tomorrow. SURCHI detects proxy patterns, identifies the upgrade admin, and flags whether the upgrade mechanism is protected by a time-lock or multi-sig. Unprotected upgradeability is treated as a high-severity finding.
+  </Accordion>
+
+  <Accordion title="Liquidity Lock">
+    A locked liquidity pool means the LP tokens representing the DEX liquidity have been deposited into a time-lock smart contract and cannot be withdrawn until the lock expires. SURCHI verifies whether liquidity is locked, identifies the locking protocol used (e.g., Team Finance, Unicrypt, Raydium locker), and surfaces the unlock date. Unlocked liquidity means the deployer can remove all funds from the pool at any time — a classic rug-pull vector.
+  </Accordion>
+
+  <Accordion title="Liquidity Burn">
+    Burning LP tokens is a stronger commitment than locking them — burned LP is permanently removed from circulation and can never be redeemed. SURCHI checks whether the LP token balance for the primary pool has been sent to a known burn address. A fully burned LP pool means rug-pulling the liquidity is technically impossible, which is considered the gold standard for liquidity safety.
+  </Accordion>
+
+  <Accordion title="Developer Wallet">
+    SURCHI analyzes the **deployer wallet's** on-chain history and current holdings. Key signals include: what percentage of the total supply the deployer wallet holds, whether the deployer has previously deployed failed or rugged projects, whether the deployer has been selling while marketing the token, and whether the deployer wallet is linked to known scam addresses. Large deployer holdings combined with no lock and no renouncement is a textbook pre-rug setup.
+  </Accordion>
+
+  <Accordion title="Top Holders & Whale Detection">
+    High concentration among a small number of wallets creates extreme sell-side risk — if the top holders dump simultaneously, the price collapses instantly. SURCHI retrieves the **top 10 and top 20 holder percentages** from on-chain data and flags tokens where the top 10 wallets control more than 30% of the circulating supply (excluding locked and burn addresses). The audit also cross-references top holders against known whale, insider, and exchange wallets.
+  </Accordion>
+
+  <Accordion title="Honeypot Detection">
+    A **honeypot** is a contract designed so that you *can* buy the token but *cannot* sell it — your funds are permanently trapped. Honeypots are implemented through hidden transfer restrictions, blacklists, or tax manipulation in the contract logic. SURCHI simulates a buy and a sell transaction against the contract and checks whether the sell succeeds, what tax is applied, and whether the tax can be changed dynamically. A failed simulated sell is an immediate critical-risk flag.
+  </Accordion>
+
+  <Accordion title="Scam Pattern Detection">
+    Beyond individual checks, SURCHI's AI model scans for **known scam signatures**: copy-paste contract code from previous rug pulls, suspicious variable names, obfuscated logic, hidden fee switches, blacklist functions disguised under innocent names, and deployer addresses linked to previously flagged contracts. Pattern matching against SURCHI's continuously updated scam database catches threats that individual rule-based checks might miss.
+  </Accordion>
+</AccordionGroup>
+
+## AI Summary
+
+After all individual checks are complete, SURCHI's AI generates a **plain-English summary** of the full audit — no jargon, no raw hex, no head-scratching. The summary explains what was found, why it matters for your specific situation, and what questions you should be asking before investing. It ties together the individual findings into a coherent risk narrative so you can quickly communicate the risks to others or make a fast decision under time pressure.
+
+The AI summary is regenerated dynamically each time the audit runs, so it always reflects the current on-chain state of the contract rather than a cached snapshot.
+
+## Audit Report & PDF Export
+
+The full audit report includes:
+
+- **Token metadata** — name, symbol, contract address, network, deployer address, creation date
+- **Risk score** — the composite 0–100 score with score breakdown by category
+- **Individual check results** — pass/warn/fail status and explanation for every check
+- **AI summary** — the plain-English narrative of all findings
+- **On-chain evidence** — links to relevant transactions, holder lists, and pool data on the block explorer
+- **Timestamp** — the exact time the audit was run, for record-keeping
+
+To download as a PDF, click the **Export PDF** button in the top-right corner of the AI Audit tab. The PDF is formatted for readability and is suitable for sharing with a community, including in a DAO proposal, or filing for your own records.
+
+## Risk Indicators
+
+At a glance, every check is marked with one of four visual indicators:
+
+<CardGroup cols={2}>
+  <Card title="🔴 Red Flag" icon="circle-xmark" color="#ef4444">
+    A critical issue that significantly increases the probability of loss. Red flags indicate contract behavior that is directly associated with scams, rug pulls, or irreversible fund loss. You should not interact with a token that has unresolved red flags.
+  </Card>
+  <Card title="🟡 Yellow Warning" icon="triangle-exclamation" color="#eab308">
+    A potentially risky condition that warrants further investigation. Yellow warnings don't automatically mean the token is a scam, but they indicate that something unusual is present and you should understand it before investing.
+  </Card>
+  <Card title="🟢 Green Pass" icon="circle-check" color="#22c55e">
+    The check completed successfully and no issues were found. A green pass means this specific risk vector is either not present or has been appropriately mitigated by the project team.
+  </Card>
+  <Card title="🔵 Blue Info" icon="circle-info" color="#3b82f6">
+    Informational data that provides context without indicating a specific risk. Blue info items help you understand the contract's design and configuration, even when there's nothing explicitly alarming.
+  </Card>
+</CardGroup>
+
+## Sample Audit Output
+
+The following is an example of the structured data returned by a SURCHI audit for a low-risk token:
+
+```json
+{
+  "token": "ExampleToken",
+  "address": "So11111111111111111111111111111111111111112",
+  "network": "solana",
+  "risk_score": 23,
+  "risk_level": "low",
+  "checks": {
+    "ownership_renounced": true,
+    "mint_authority": false,
+    "freeze_authority": false,
+    "liquidity_locked": true,
+    "honeypot": false,
+    "top_10_holder_pct": 18.4
+  },
+  "ai_summary": "This contract has renounced ownership and locked liquidity. No mint or freeze authority detected. Top holders are well-distributed. Low risk overall."
+}
+```
+
+## Best Practices
+
+<Tip>
+  **Always run an audit before buying**, even if the token is trending or being promoted by influencers. Hype is frequently used to distract from contract red flags. An audit takes less than 10 seconds and can save your entire position.
+</Tip>
+
+<Tip>
+  **Re-run the audit periodically** for tokens you already hold. Contract authority, holder distribution, and liquidity lock status can all change after you buy. SURCHI always fetches the latest on-chain state, so a re-audit surfaces any post-launch changes to the contract.
+</Tip>
+
+<Tip>
+  **Combine the audit with whale tracking.** A clean contract with a suspicious deployer wallet actively selling is still a losing trade. Use SURCHI's Wallet Intelligence alongside the audit to get the full picture.
+</Tip>
+
+<Tip>
+  **Pay attention to the AI summary, not just the score.** A score of 35 with a flagged mint authority is very different from a score of 35 with only minor holder concentration. The AI summary explains the specific nature of each finding so you can prioritize what actually matters.
+</Tip>
+
+<Warning>
+  SURCHI's AI Contract Audit is provided for **informational purposes only** and does not constitute financial, legal, or investment advice. Audit results reflect on-chain data at the time the audit was run and may not account for off-chain risks, team behavior, or market conditions. A passing audit score does not guarantee the safety or profitability of any token. Always conduct your own research and never invest more than you can afford to lose.
+</Warning>

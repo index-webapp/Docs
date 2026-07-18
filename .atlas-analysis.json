@@ -1,21 +1,11 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
+  "projectType": "saas",
+  "projectName": "SURCHI",
+  "projectDescription": "SURCHI is a multi-chain blockchain analytics platform offering real-time token exploration, AI-powered contract auditing, wallet intelligence, and smart liquidity routing.",
   "theme": "luma",
-  "name": "SURCHI",
-  "colors": {
-    "primary": "#16C784",
-    "light": "#16C784",
-    "dark": "#0FA863"
-  },
-  "favicon": "/favicon.svg",
-  "appearance": {
-    "default": "dark"
-  },
-  "background": {
-    "color": {
-      "dark": "#0B0E11"
-    }
-  },
+  "primaryColor": "#16C784",
+  "lightColor": "#16C784",
+  "darkColor": "#0FA863",
   "navigation": {
     "tabs": [
       {
@@ -106,29 +96,32 @@
       }
     ]
   },
-  "navbar": {
-    "links": [
-      {
-        "label": "Website",
-        "href": "https://surchi.xyz"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Launch App",
-      "href": "https://surchi.xyz"
-    }
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/surchi_xyz"
-    }
-  },
-  "seo": {
-    "metatags": {
-      "og:site_name": "SURCHI Docs",
-      "og:type": "website",
-      "twitter:card": "summary_large_image"
-    }
-  }
+  "keyFeatures": [
+    "Multi-chain blockchain explorer with token, contract, wallet, and liquidity lookup",
+    "AI-powered smart contract audit with risk scoring and honeypot detection",
+    "Wallet intelligence with PnL tracking, portfolio analysis, and whale monitoring",
+    "Smart liquidity routing across Raydium, Orca, Jupiter, and Pump.fun",
+    "Real-time market analytics with charts, trending tokens, and alerts",
+    "SURCHI governance token on Solana SPL with staking and premium feature access",
+    "REST API and SDK for programmatic access to analytics data",
+    "Webhook notifications for on-chain events and alerts"
+  ],
+  "publicApiSurface": [
+    "GET /v1/tokens/{address}",
+    "GET /v1/tokens/search",
+    "GET /v1/tokens/{address}/holders",
+    "GET /v1/wallets/{address}",
+    "GET /v1/wallets/{address}/portfolio",
+    "GET /v1/wallets/{address}/pnl",
+    "GET /v1/contracts/{address}/audit",
+    "GET /v1/liquidity/{pair}",
+    "GET /v1/liquidity/route",
+    "GET /v1/trending",
+    "POST /v1/alerts",
+    "GET /v1/networks",
+    "surchi.tokens.get(address)",
+    "surchi.wallets.analyze(address)",
+    "surchi.contracts.audit(address)",
+    "surchi.liquidity.route(params)"
+  ]
 }

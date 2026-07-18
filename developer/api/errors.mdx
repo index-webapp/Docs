@@ -1,0 +1,133 @@
+---
+title: "SURCHI API Error Codes and Troubleshooting Guide"
+sidebarTitle: "Errors"
+description: "Complete reference of SURCHI API error codes, HTTP status codes, and troubleshooting steps for common API integration issues."
+---
+
+When something goes wrong, the SURCHI API always returns a structured JSON error response with a machine-readable error code, a human-readable message, the HTTP status code, and — where applicable — a `details` object with context-specific information to help you debug quickly. Understanding the error format and knowing which codes to expect from each endpoint will help you build robust integrations that recover gracefully from transient failures and surface meaningful errors to your users.
+
+## Error Response Format
+
+All error responses use the same envelope as successful responses, but with `success: false` and an `error` object in place of `data`.
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "TOKEN_NOT_FOUND",
+    "message": "Token address not found on the specified network",
+    "status": 404,
+    "details": {
+      "address": "0xInvalidAddress",
+      "network": "ethereum"
+    }
+  }
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `error.code` | string | Machine-readable error identifier. Use this for programmatic error handling. |
+| `error.message` | string | Human-readable description of the error, suitable for logging |
+| `error.status` | integer | HTTP status code, mirrored in the response body for convenience |
+| `error.details` | object | Optional. Contains context-specific fields such as the invalid address or network name |
+
+## HTTP Status Codes
+
+| Status | Meaning |
+|--------|---------|
+| 200 | Success |
+| 400 | Bad Request — invalid parameters |
+| 401 | Unauthorized — invalid or missing API key |
+| 403 | Forbidden — insufficient key scope |
+| 404 | Not Found — resource doesn't exist |
+| 429 | Too Many Requests — rate limit exceeded |
+| 500 | Internal Server Error |
+| 503 | Service Unavailable — maintenance or degraded upstream |
+
+## Error Code Reference
+
+| Code | Status | Description |
+|------|--------|-------------|
+| `UNAUTHORIZED` | 401 | API key is missing from the request or has been revoked |
+| `FORBIDDEN` | 403 | API key is valid but lacks the required scope for this endpoint |
+| `TOKEN_NOT_FOUND` | 404 | Token address was not found on the specified network |
+| `WALLET_NOT_FOUND` | 404 | Wallet address has no recorded on-chain activity on the specified network |
+| `INVALID_ADDRESS` | 400 | The address provided is malformed or does not match the expected format for the network |
+| `INVALID_NETWORK` | 400 | The `network` parameter is missing or does not match a supported network identifier |
+| `RATE_LIMIT_EXCEEDED` | 429 | You have exceeded your plan's request-per-minute limit |
+| `AUDIT_UNAVAILABLE` | 503 | The AI audit engine is temporarily unavailable; retry after 30 seconds |
+| `NETWORK_UNAVAILABLE` | 503 | The requested blockchain's node is temporarily unreachable |
+
+## Handling Rate Limits
+
+When you exceed your rate limit, the API returns HTTP `429` with a `Retry-After` header specifying how many seconds to wait before your window resets. The following JavaScript helper demonstrates an exponential-backoff retry pattern that respects this header:
+
+```javascript
+async function fetchWithRetry(url, options, maxRetries = 3) {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const response = await fetch(url, options);
+
+    if (response.status !== 429) return response;
+
+    const retryAfter = response.headers.get('Retry-After') || 60;
+    console.warn(`Rate limited. Retrying in ${retryAfter}s (attempt ${attempt + 1}/${maxRetries})`);
+    await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+  }
+
+  throw new Error('Max retries exceeded after rate limiting');
+}
+
+// Usage
+const response = await fetchWithRetry(
+  'https://api.surchi.xyz/v1/trending',
+  { headers: { 'Authorization': 'Bearer YOUR_API_KEY' } }
+);
+```
+
+Monitor these response headers on every request to stay ahead of your limit before you hit it:
+
+| Header | Description |
+|--------|-------------|
+| `X-RateLimit-Limit` | Maximum requests allowed per minute on your current plan |
+| `X-RateLimit-Remaining` | Requests remaining in the current one-minute window |
+| `X-RateLimit-Reset` | Unix timestamp (UTC) at which your window resets and the full limit is restored |
+
+## Common Issues
+
+<AccordionGroup>
+  <Accordion title="My API key returns 401 Unauthorized">
+    A `401` response means the API could not authenticate your request. Work through these checks in order:
+
+    1. **Verify the header format.** The header must be exactly `Authorization: Bearer sk_live_xxxxxxxxxxxx` — including the `Bearer ` prefix followed by a single space. Do not include quotes around the key value.
+    2. **Check for trailing whitespace.** Copy-paste errors often introduce a trailing space or newline at the end of the key. Trim your key string before sending.
+    3. **Confirm the key has not been revoked.** Log in to [surchi.xyz/dashboard](https://surchi.xyz/dashboard) → Settings → API Keys and verify the key appears as active.
+    4. **Check you are using the correct environment.** Test keys (prefixed `sk_test_`) will not work against the production base URL and vice versa.
+  </Accordion>
+
+  <Accordion title="Token not found, but I know the token exists">
+    A `TOKEN_NOT_FOUND` error with a contract address you are confident is correct almost always comes down to a mismatched `network` parameter.
+
+    - Double-check that the `network` value in your request matches the chain the token actually lives on. For example, a Polygon token passed with `network=ethereum` will return 404.
+    - Verify the address is the token contract address, not a pool address or wallet address.
+    - For newly launched tokens (under ~5 minutes old), indexing may not be complete. Wait 60 seconds and retry.
+    - Make sure the address casing is correct for EVM chains — SURCHI accepts both checksummed and lowercase addresses, but some addresses with invalid checksums may be rejected with `INVALID_ADDRESS`.
+  </Accordion>
+
+  <Accordion title="Contract audit returns 503">
+    An `AUDIT_UNAVAILABLE` error means SURCHI's AI audit engine is temporarily busy or being updated. This is a transient state, not a permanent failure.
+
+    - Wait 30 seconds and retry your request. Most `AUDIT_UNAVAILABLE` windows are resolved within one minute.
+    - Check the [SURCHI status page](https://status.surchi.xyz) if the error persists for more than five minutes.
+    - The audit endpoint has a longer timeout than other endpoints (up to 10 seconds) due to AI processing time. If you are seeing timeouts rather than `503` errors, increase your HTTP client timeout to at least 15 seconds.
+  </Accordion>
+
+  <Accordion title="I'm hitting rate limits but my request volume seems low">
+    If you are receiving `RATE_LIMIT_EXCEEDED` errors unexpectedly, check the following:
+
+    - **Read the `X-RateLimit-Remaining` header** on your responses. You may be sharing a key across multiple processes or services that are each consuming quota independently.
+    - **Check your plan's limit.** The Free plan allows only 10 requests per minute. If you are making more than this — including retries — you will hit the limit quickly. Consider upgrading to Standard or Pro.
+    - **Avoid polling short-interval loops.** If you are calling `/v1/trending` in a tight loop, add a minimum delay of at least 60 seconds between calls — the feed only refreshes once per minute anyway.
+    - **Cache responses where possible.** Token data, portfolio snapshots, and audit results change slowly. Store responses locally and serve from cache rather than re-fetching on every page load.
+  </Accordion>
+</AccordionGroup>
