@@ -1,5 +1,5 @@
 ---
-title: "How SURCHI Works: Real-Time Multi-Chain Analytics"
+title: "How SURCHI Works: Real-Time Multi-Chain Data Analytics"
 sidebarTitle: "How It Works"
 description: "Discover how SURCHI indexes blockchains in real time, runs AI audits on smart contracts, and surfaces actionable insights for traders and developers."
 ---
@@ -64,7 +64,7 @@ Understanding how a single request travels through SURCHI helps illustrate the p
     SURCHI's indexer nodes subscribe to each blockchain's RPC and WebSocket endpoints. Every new block triggers a batch ingestion job that extracts all relevant events — token transfers, contract calls, liquidity changes, and new contract deployments. Data is ingested across all seven chains in parallel, with no single chain acting as a bottleneck.
   </Step>
   <Step title="Index & Normalize">
-    Raw blockchain data varies significantly in structure between chains (EVM vs. Solana vs. others). SURCHI's normalization layer translates all incoming data into a unified schema — standardizing address formats, token decimals, timestamp precision, and event types. This normalized data is written to SURCHI's indexed data store, where it becomes immediately queryable by the API and frontend.
+    Raw blockchain data varies significantly in structure between chains (EVM vs. Solana vs. others). SURCHI's normalization layer translates all incoming data into a unified schema — standardizing address formats, token decimals, timestamp precision, and event types. This normalized data is indexed and made immediately queryable by the API and frontend.
   </Step>
   <Step title="Apply AI Analysis">
     Once data is indexed, SURCHI's AI Engine runs enrichment jobs. New contract deployments are automatically queued for audit scoring. Wallet activity updates trigger re-calculation of PnL and behavioral metrics. Liquidity events update the routing graph used by the Liquidity Router. AI enrichment happens asynchronously so it never blocks real-time data access — scores and flags appear as soon as they're computed, typically within seconds.

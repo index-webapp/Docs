@@ -1,5 +1,5 @@
 ---
-title: "SURCHI Platform Architecture: How Analytics Scale Across Chains"
+title: "SURCHI Architecture: Multi-Chain Analytics at Scale"
 sidebarTitle: "Architecture"
 description: "Learn how SURCHI's multi-chain architecture handles real-time blockchain indexing, data normalization, AI processing, and serving analytics at scale."
 ---
@@ -34,7 +34,7 @@ Every component in this pipeline is operated by SURCHI. You interact exclusively
     The single entry point for all requests to the SURCHI platform. Handles authentication, rate limiting, request routing, and response caching. Designed for high availability with automatic failover so your queries are always answered.
   </Card>
   <Card title="Blockchain Indexers" icon="database">
-    Dedicated indexing services that connect directly to full nodes on each supported chain. They ingest every block and transaction in real time, parse on-chain events, and feed normalised data downstream for storage and analysis.
+    Per-chain indexing services that track every block and transaction in real time across all supported networks. They parse on-chain events and normalise the data so it is immediately available for analytics queries and real-time alerts.
   </Card>
   <Card title="AI Engine" icon="robot">
     The machine-learning layer responsible for contract risk scoring, anomaly detection, and natural-language audit summaries. It operates on normalised data from the Analytics Engine and returns structured risk assessments accessible via the API.
@@ -45,8 +45,8 @@ Every component in this pipeline is operated by SURCHI. You interact exclusively
   <Card title="WebSocket Server" icon="wifi">
     Maintains persistent connections with subscribed clients and pushes real-time updates for price movements, new transactions, whale alerts, and custom notification triggers — without requiring repeated polling.
   </Card>
-  <Card title="Data Layer" icon="layer-group">
-    A normalised, multi-chain data store that abstracts away the differences between chain-specific data formats. Regardless of whether a query touches Ethereum, Solana, or BNB Chain data, the response schema is consistent and predictable.
+  <Card title="Unified Data Layer" icon="layer-group">
+    Abstracts away the differences between chain-specific data formats so that every API response follows a consistent, predictable schema — regardless of whether the underlying data originated on Ethereum, Solana, BNB Chain, or any other supported network.
   </Card>
 </CardGroup>
 
@@ -65,7 +65,7 @@ Here is how data moves from the blockchain to your screen:
     A new block is confirmed on the source blockchain. The SURCHI indexer for that chain receives the block event via its dedicated WebSocket subscription to a full node.
   </Step>
   <Step title="Indexer Detects & Parses">
-    The blockchain indexer decodes every transaction and log in the block, extracts token transfers, DEX swaps, contract interactions, and wallet balance changes, and structures them as internal events.
+    The blockchain indexer decodes every transaction and log in the block, extracts token transfers, DEX swaps, contract interactions, and wallet balance changes, and prepares them for normalisation and analysis.
   </Step>
   <Step title="Data Normalised">
     Raw chain-specific data is translated into SURCHI's unified schema. A Solana SPL transfer and an ERC-20 transfer, for example, are both represented identically in the data layer — making cross-chain queries seamless.
@@ -74,7 +74,7 @@ Here is how data moves from the blockchain to your screen:
     High-value events — such as large transfers, new token deployments, or unusual contract interactions — are routed through the AI Audit Engine for automatic risk scoring and anomaly flagging.
   </Step>
   <Step title="Pushed to Users">
-    Processed data is written to the Data Layer, cache is updated, and any subscribers with matching WebSocket filters receive a real-time push notification. REST API queries against this data return immediately from cache.
+    Processed data becomes immediately queryable, cache is refreshed, and any subscribers with matching WebSocket filters receive a real-time push notification. REST API queries against this data return within milliseconds.
   </Step>
 </Steps>
 

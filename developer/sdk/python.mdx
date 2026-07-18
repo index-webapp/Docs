@@ -1,7 +1,7 @@
 ---
-title: "SURCHI Python SDK Reference and Usage Examples"
+title: "SURCHI Python SDK: Complete Reference and Examples"
 sidebarTitle: "Python SDK"
-description: "Complete guide to using the surchi-sdk Python package: installation, async and sync clients, token queries, wallet PnL, contract audits, and error handling."
+description: "Complete guide to the surchi-sdk package: sync and async clients, token queries, wallet PnL, portfolio analysis, contract audits, and error handling."
 ---
 
 The `surchi-sdk` package is the official Python client for the SURCHI API. It ships with both a synchronous client for scripting and standard web frameworks and an asynchronous client built on `httpx` for high-throughput applications and async frameworks such as FastAPI or asyncio-based pipelines.
@@ -79,6 +79,14 @@ pnl = client.wallets.pnl(
 )
 print(f"Realized PnL: ${pnl.realized_usd:,.2f}")
 print(f"ROI: {pnl.roi_pct:.1f}%")
+
+# Get portfolio
+portfolio = client.wallets.portfolio(
+    address='7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
+    network='solana'
+)
+for position in portfolio.positions:
+    print(f"{position.token_symbol}: ${position.value_usd:,.2f}")
 ```
 
 ## Contracts Module

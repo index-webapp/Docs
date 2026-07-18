@@ -1,7 +1,7 @@
 ---
-title: "SURCHI Security: Protecting Your Data and Wallet"
+title: "SURCHI Platform Security: Data, Wallets, and API Keys"
 sidebarTitle: "Security"
-description: "Learn how SURCHI protects user data, secures API access, handles wallet connections safely, and maintains platform integrity with encryption and rate limiting."
+description: "How SURCHI protects your data and wallet: API key scopes, TLS encryption, OAuth login, rate limiting, and responsible disclosure for security researchers."
 ---
 
 Security is a foundational requirement of blockchain analytics, not an afterthought. When you use SURCHI, you are trusting the platform with wallet addresses, API credentials, and access to real-time on-chain intelligence. This page explains exactly what SURCHI does to protect your data, how to use the platform safely, and what to do if you believe you have found a security vulnerability.
@@ -56,7 +56,7 @@ When you exceed your rate limit, the API returns a `429 Too Many Requests` respo
 Your data is protected both when it is being transmitted and when it is stored.
 
 - **Encryption in transit.** All data exchanged between your client and the SURCHI platform is encrypted using TLS 1.3. This applies to the REST API, WebSocket connections, the web application, and webhook deliveries to your endpoints.
-- **Encryption at rest.** All user account data, API keys (stored as hashed values, never in plaintext), and analytics preferences are encrypted at rest using AES-256. Database backups are encrypted with the same standard.
+- **Encryption at rest.** All user account data, API keys (stored as hashed values, never in plaintext), and analytics preferences are encrypted at rest using AES-256.
 - **API keys are never stored in plaintext.** When you create an API key, SURCHI shows it to you once and then stores only a non-reversible hash. If you lose your key, you must rotate it — there is no "reveal" option because the original value is not retained.
 - **Webhook payloads are signed.** Every webhook delivery includes a cryptographic signature in the `X-SURCHI-Signature` header so you can verify that the payload originated from SURCHI and has not been tampered with in transit.
 
